@@ -12,12 +12,14 @@
 <center>模式: 𝐍=普通模式 𝐕=可視模式(選取) 𝐈=插入模式</center>
 
 ### 常用按鍵 
-
 | Key   | Mode | Action             | 說明 
 | ----- |:----:| ------------------ | ------
 | <kbd>jk</kbd>| 𝐈| 切換到普通模式 | 
 | <kbd>Space</kbd> + <kbd>.</kbd>| 𝐍 | 打開/關閉 Terminal | 
-| <kbd>Space</kbd>+<kbd>r</kbd>| 𝐍 𝐕 𝐈| Jump to edge upward/downward | <small>[haya14busa/vim-edgemotion]</small>
+| <kbd>Space</kbd> + <kbd>r</kbd>| 𝐍 𝐕 𝐈| 編譯&執行 | 支援C/C++/Python/Java
+| <kbd>Space</kbd> + <kbd>s</kbd>| 𝐈| 保存文件 | 
+| <kbd>Space</kbd> + <kbd>a</kbd> + <kbd>c</kbd>| 𝐕 | 複製整份文件 | 
+| <kbd>Space</kbd> + <kbd>s</kbd>| 𝐕 | 複製選取文字 | 用可視模式選取
 | <kbd>gh</kbd> / <kbd>gl</kbd> | 𝐍 𝐕 | Easier line-wise movement | `g` `^/$`
 | <kbd>Space</kbd>+<kbd>Space</kbd> | 𝐍 𝐕 | Toggle visual-line mode | `V` / <kbd>Escape</kbd>
 | <kbd>v</kbd> / <kbd>V</kbd> | 𝐕 | Expand/reduce selection | <small>[terryma/vim-expand-region]</small>

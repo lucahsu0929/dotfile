@@ -11,7 +11,8 @@ local opt = {noremap = true, silent = true }
 map("i", "jk", "<ESC>", opt)
 map("n", "<leader>s", ":w<cr>",opt)
 
-map("n", "<leader>c", "gg0vG\"+y", opt)
+map("n", "<leader>ac", "gg0vG\"+y", opt)
+map("v", "<leader>c", "\"+y", opt)
 vim.api.nvim_set_keymap('n', 'j', '<Plug>(accelerated_jk_gj)', {})
 vim.api.nvim_set_keymap('n', 'k', '<Plug>(accelerated_jk_gk)', {})
 
