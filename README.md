@@ -10,7 +10,7 @@
 brew install --cask iterm2
 ```
 
-3. Iterm theme: Tomorrow Night Eighties  
+3. Iterm theme: Tomorrow Night Eighties  <br>
 <https://github.com/chriskempson/tomorrow-theme/blob/master/iTerm2/Tomorrow%20Night%20Eighties.itermcolors>
 Iterm左上角 > setting(或直接按cmd+.) > Profiles > Colors > Color Presets(左下角）> import..
 
@@ -36,7 +36,7 @@ git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.o
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 ```
  
-9. 修改.zshrc
+9. 修改.zshrc <br>
 修改完後打開iterm 會自動跑powerlevel10k的設定，根據喜好調整
 ```
 vim ~/.zshrc
