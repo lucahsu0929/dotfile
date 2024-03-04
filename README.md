@@ -1,11 +1,8 @@
 ## Custom Key-mappings
 
-><leader>設為<kbd>space</kbd>
+！<leader>設為<kbd>space</kbd>
 
 * **Leader** key set as <kbd>,</kbd>
-* **Local-Leader** key set as <kbd>;</kbd> and used for navigation and search
-  (Denite and Defx)
-* Disable <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> in normal mode by enabling `g:elite_mode` in `.vault.vim`
 
 <details open>
   <summary>
@@ -13,13 +10,14 @@
     <small><i>(🔎 Click to expand/collapse)</i></small>
   </summary>
 
-<center>Modes: 𝐍=normal 𝐕=visual 𝐒=select 𝐈=insert 𝐂=command</center>
+<center>模式: 𝐍=普通模式 𝐕=可視模式(選取) 𝐈=插入模式</center>
 
-### Navigation
+### 常用按鍵 
 
 | Key   | Mode | Action             | 說明 
 | ----- |:----:| ------------------ | ------
-| <kbd>jk</kbd>| 𝐈 | 切換到普通模式 | 1 
+| <kbd>jk</kbd>| 𝐈 | 切換到普通模式 | 
+| <kbd><leader></kbd> + <kbd>.</kbd>| 𝐈 | 切換到普通模式 | 
 | <kbd>g</kbd>+<kbd>j</kbd> / <kbd>k</kbd> | 𝐍 𝐕 𝐒 | Jump to edge upward/downward | <small>[haya14busa/vim-edgemotion]</small>
 | <kbd>gh</kbd> / <kbd>gl</kbd> | 𝐍 𝐕 | Easier line-wise movement | `g` `^/$`
 | <kbd>Space</kbd>+<kbd>Space</kbd> | 𝐍 𝐕 | Toggle visual-line mode | `V` / <kbd>Escape</kbd>
