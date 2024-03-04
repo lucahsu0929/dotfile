@@ -37,6 +37,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 ```
  
 9. 修改.zshrc
+修改完後打開iterm 會自動跑powerlevel10k的設定，根據喜好調整
 ```
 vim ~/.zshrc
 
