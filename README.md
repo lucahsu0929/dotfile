@@ -17,9 +17,9 @@ Note that,
 
 ### Navigation
 
-| Key   | Mode | Action             | Plugin or Mapping
+| Key   | Mode | Action             | 說明 
 | ----- |:----:| ------------------ | ------
-| <kbd>j</kbd> / <kbd>k</kbd> | 𝐍 𝐕 | Cursor moves through display-lines | `g` `j/k`
+| <kbd>jk</kbd>| 𝐈 | 切換到普通模式 | 1 
 | <kbd>g</kbd>+<kbd>j</kbd> / <kbd>k</kbd> | 𝐍 𝐕 𝐒 | Jump to edge upward/downward | <small>[haya14busa/vim-edgemotion]</small>
 | <kbd>gh</kbd> / <kbd>gl</kbd> | 𝐍 𝐕 | Easier line-wise movement | `g` `^/$`
 | <kbd>Space</kbd>+<kbd>Space</kbd> | 𝐍 𝐕 | Toggle visual-line mode | `V` / <kbd>Escape</kbd>
