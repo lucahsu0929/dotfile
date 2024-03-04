@@ -3,6 +3,13 @@ return require('packer').startup(function()
   use 'wbthomason/packer.nvim'
 
   use 'sainnhe/everforest'
+  
+     use {
+  'nvim-telescope/telescope.nvim', tag = '0.1.4',
+-- or                            , branch = '0.1.x',
+  requires = { {'nvim-lua/plenary.nvim'} }
+}
+
 
   use {
   'phaazon/hop.nvim',
@@ -22,11 +29,6 @@ return require('packer').startup(function()
 
   use { 'nvim-treesitter/nvim-treesitter'}
 
-  use {
-  'nvim-telescope/telescope.nvim', tag = '0.1.1',
--- or                            , branch = '0.1.x',
-  requires = { {'nvim-lua/plenary.nvim'} }
-}
   use 'm4xshen/autoclose.nvim'
   use {
     'numToStr/Comment.nvim',
