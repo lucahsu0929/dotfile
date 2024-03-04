@@ -10,7 +10,7 @@
 brew install --cask iterm2
 ```
 
-3. Iterm theme: Tomorrow Night Eighties
+3. Iterm theme: Tomorrow Night Eighties  
 <https://github.com/chriskempson/tomorrow-theme/blob/master/iTerm2/Tomorrow%20Night%20Eighties.itermcolors>
 Iterm左上角 > setting(或直接按cmd+.) > Profiles > Colors > Color Presets(左下角）> import..
 
