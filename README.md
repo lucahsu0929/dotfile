@@ -74,3 +74,8 @@ alias vim=‘nvim’
 mkdir ~/.config
 git clone https://github.com/Luca0929/vim-config.git ~/.config/nvim
 ```
+
+12. 安裝packer.nvim
+```
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+```
