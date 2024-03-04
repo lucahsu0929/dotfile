@@ -1,6 +1,6 @@
 ## Custom Key-mappings
 
-Note that,
+><leader>設為<kbd>space</kbd>
 
 * **Leader** key set as <kbd>,</kbd>
 * **Local-Leader** key set as <kbd>;</kbd> and used for navigation and search
