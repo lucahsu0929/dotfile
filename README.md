@@ -11,11 +11,11 @@ brew install --cask iterm2
 ```
 
 3. Iterm theme: Tomorrow Night Eighties
-
 <https://github.com/chriskempson/tomorrow-theme/blob/master/iTerm2/Tomorrow%20Night%20Eighties.itermcolors>
+Iterm左上角 > setting(或直接按cmd+.) > Profiles > Colors > Color Presets(左下角）> import..
 
 
-4. 安裝 zsh
+5. 安裝 zsh
 ```
 sudo apt install zsh
 ```
@@ -30,7 +30,13 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/mas
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ```
 
-7. 修改.zshrc
+7. 安裝zsh plugin
+```
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+```
+ 
+9. 修改.zshrc
 ```
 vim ~/.zshrc
 
@@ -60,3 +66,11 @@ alias vim=‘nvim’
 ```
 
 
+10. Keyboard Repeat Rate
+<img width="469" alt="Key repeat rate" src="https://github.com/Luca0929/vim-config/assets/52985205/cc54b138-3cce-497c-a4b5-a77c8bb90178">
+
+11. 配置neovim
+```
+mkdir ~/.config
+git clone https://github.com/Luca0929/vim-config.git ~/.config/nvim
+```
