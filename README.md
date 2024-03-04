@@ -1,8 +1,7 @@
 ## Custom Key-mappings
 
-！<leader>設為<kbd>space</kbd>
 
-* **Leader** key set as <kbd>,</kbd>
+* **Leader** 設為 <kbd>Space</kbd>
 
 <details open>
   <summary>
@@ -16,9 +15,9 @@
 
 | Key   | Mode | Action             | 說明 
 | ----- |:----:| ------------------ | ------
-| <kbd>jk</kbd>| 𝐈 | 切換到普通模式 | 
-| <kbd><leader></kbd> + <kbd>.</kbd>| 𝐈 | 切換到普通模式 | 
-| <kbd>g</kbd>+<kbd>j</kbd> / <kbd>k</kbd> | 𝐍 𝐕 𝐒 | Jump to edge upward/downward | <small>[haya14busa/vim-edgemotion]</small>
+| <kbd>jk</kbd>| 𝐈| 切換到普通模式 | 
+| <kbd>Space</kbd> + <kbd>.</kbd>| 𝐍 | 打開/關閉 Terminal | 
+| <kbd>Space</kbd>+<kbd>r</kbd>| 𝐍 𝐕 𝐈| Jump to edge upward/downward | <small>[haya14busa/vim-edgemotion]</small>
 | <kbd>gh</kbd> / <kbd>gl</kbd> | 𝐍 𝐕 | Easier line-wise movement | `g` `^/$`
 | <kbd>Space</kbd>+<kbd>Space</kbd> | 𝐍 𝐕 | Toggle visual-line mode | `V` / <kbd>Escape</kbd>
 | <kbd>v</kbd> / <kbd>V</kbd> | 𝐕 | Expand/reduce selection | <small>[terryma/vim-expand-region]</small>
