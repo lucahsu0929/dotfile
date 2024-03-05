@@ -123,7 +123,15 @@ brew install deno
 vim
 :PackerSync
 ```
-**_15._** 學習vim 
+**_15._** 學習vim、練習打字速度
+
+![The-learning-curve-With-the-introduction-and-implementation-of-a-new-technique-high](https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49)<br>
+<img width="602" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
+<img width="972" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/42e2678b-c2b7-4ac8-a646-f4c0ded4b509"> <br>
+
+[我學會盲打的地方，記得登入紀錄學習歷程](https://www.keybr.com/) <br>
+[好看的打字練習](https://monkeytype.com/)
+
 
 ---
 
