@@ -15,7 +15,7 @@ map("v", "<leader>c", "\"+y", opt)
 map("n", "<tab>j", ":bprevious<CR>", opt) --previous buffer
 map("n", "<tab>k", ":bnext<CR>", opt) --next buffer
 map("n", "<tab>q", ":bdelete<CR>", opt) --delete buffer
-map("n", "<leader>m", ":PeekOpen<CR>", opt) --markdown
+map("n", "<leader>m", ":MarkdownPreview<CR>", opt) --markdown
 map("n", "<leader>.", ":FloatermNew<CR>", opt)
 map("t", "<leader>.", "<c-\\><c-n>:FloatermKill<CR>", opt)
 -- map("n", "<leader>s", ":source %<CR>", opt) --refresh current file

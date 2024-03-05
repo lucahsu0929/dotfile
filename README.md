@@ -103,20 +103,25 @@ alias vim=‘nvim’
 鍵盤重複速率(不然原本的vim移動太慢了)<br>
 <img width="469" alt="Key repeat rate" src="https://github.com/Luca0929/vim-config/assets/52985205/cc54b138-3cce-497c-a4b5-a77c8bb90178">
 
-**_12._** 配置neovim
+
+**_12._** 安裝packer.nvim
+```
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+```
+
+**_13._** 配置neovim
 ```
 mkdir ~/.config
 git clone https://github.com/Luca0929/vim-config.git ~/.config/nvim
 ```
 
-**_13._** 安裝packer.nvim
-```
-git clone --depth 1 https://github.com/wbthomason/packer.nvim\ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-```
-
 **_14._** 安裝插件
 ```
-brew install deno
+brew install node
+```
+
+```
+brew install yarn
 ```
 
 ```
@@ -219,7 +224,8 @@ vim
 | <kbd>Space</kbd> + <kbd>a</kbd> + <kbd>c</kbd>| 𝐕 | 複製整份文件 | 
 | <kbd>Space</kbd> + <kbd>c</kbd>| 𝐕 | 複製選取文字 | 用可視模式選取
 | <kbd>Space</kbd> + <kbd>f</kbd> + <kbd>f</kbd>| 𝐕 | 快速查找文件 |搜索文件所在資料夾內所有檔案 <br> telescope.nvim
-| <kbd>Space</kbd> + <kbd>m</kbd>| 𝐍 | 打開MarkDown預覽 | peek.nvim
+| <kbd>Space</kbd> + <kbd>m</kbd>| 𝐍 | 打開MarkDown預覽 | markdown-preview.nvim
+
 
 ### nvimtree 操作（資料探索) 
 | 按鍵   | 動作            | 注意事項|

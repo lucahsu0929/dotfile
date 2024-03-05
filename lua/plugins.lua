@@ -3,9 +3,11 @@ return require('packer').startup(function()
     use 'wbthomason/packer.nvim'
 
     use 'sainnhe/everforest'
-    -- Markdown preview:
-    -- Install Deno: brew install deno
-    use({ 'toppair/peek.nvim', run = 'deno task --quiet build:fast' }) 
+
+    use({
+    "iamcco/markdown-preview.nvim",
+    run = function() vim.fn["mkdp#util#install"]() end,
+    })
 
     use 'voldikss/vim-floaterm'
 

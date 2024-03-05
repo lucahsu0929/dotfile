@@ -16,7 +16,7 @@ require('peek').setup({
   filetype = { 'markdown' },-- list of filetypes to recognize as markdown
 
   -- relevant if update_on_change is true
-  throttle_at = 200000,     -- start throttling when file exceeds this
+  throttle_at = 2000000,     -- start throttling when file exceeds this
                             -- amount of bytes in size
   throttle_time = 'auto',   -- minimum amount of time in milliseconds
                             -- that has to pass before starting new render
