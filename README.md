@@ -1,4 +1,5 @@
 # Lumina's NeoVim Configuration
+![Uploading IMG_2306.jpg…]()
 
 ## 配置特色
 * 快速啟動 
