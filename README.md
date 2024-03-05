@@ -23,12 +23,16 @@
 **_2._** 安裝iterm
 
 ```
+brew install java
+```
+
+```
 brew install --cask iterm2
 ```
 
 **_3._** 修改Iterm主題
 <br>Theme : [Tomorrow Night Eighties](https://github.com/chriskempson/tomorrow-theme/blob/master/iTerm2/Tomorrow%20Night%20Eighties.itermcolors)
-<br>打開Iterm > <kbd>cmd</kbd>+<kbd>.</kbd> > Profiles > Colors > Color Presets(右下角）> import..
+<br>打開Iterm > <kbd>cmd</kbd>+<kbd>,</kbd> > Profiles > Colors > Color Presets(右下角）> import..
 
 
 **_4._** 安裝 zsh
