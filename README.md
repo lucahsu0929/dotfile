@@ -23,7 +23,7 @@
 **_2._** 安裝iterm
 
 ```
-brew install java
+brew install javajdk
 ```
 
 ```
