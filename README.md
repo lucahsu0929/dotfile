@@ -1,5 +1,6 @@
 # Lumina's NeoVim Configuration
-![Uploading IMG_2306.jpg…]()
+
+![IMG_2306](https://github.com/Luca0929/vim-config/assets/52985205/a06d01b6-6bc4-4096-b803-f26148f86e53)
 
 ## 配置特色
 * 快速啟動 
