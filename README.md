@@ -22,9 +22,7 @@
 
 **_2._** 安裝iterm
 
-```
-brew install openjdk
-```
+
 
 ```
 brew install --cask iterm2
@@ -37,7 +35,15 @@ brew install --cask iterm2
 
 **_4._** 安裝 zsh
 ```
-sudo apt install zsh
+brew install openjdk
+```
+
+```
+sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+```
+
+```
+brew install zsh
 ```
 
 **_5._** 安裝 oh-my-zsh
