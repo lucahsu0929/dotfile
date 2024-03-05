@@ -1,45 +1,58 @@
-# Lumina's Vim Configuration
+# Lumina's NeoVim Configuration
+
+## 配置特色
+* 快速啟動 
+* 輕量化
+* 柔和配色
+* lua配置
+* 支援Java/C/Python運行
+* 支援Markdown即時預覽
+* 內建Terminal，不必再進進出出
+* nvimtree側邊資料瀏覽
+* 快速跳轉，大量減少鼠標依賴
 
 ##  安裝步驟
-1. 安裝brew
+**_1._** 安裝brew
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-2. 安裝iterm
+**_2._** 安裝iterm
 
 ```
 brew install --cask iterm2
 ```
 
-3. 修改Iterm主題
+**_3._** 修改Iterm主題
 <br>Theme : [Tomorrow Night Eighties](https://github.com/chriskempson/tomorrow-theme/blob/master/iTerm2/Tomorrow%20Night%20Eighties.itermcolors)
 <br>打開Iterm > <kbd>cmd</kbd>+<kbd>.</kbd> > Profiles > Colors > Color Presets(右下角）> import..
 
 
-5. 安裝 zsh
+**_4._** 安裝 zsh
 ```
 sudo apt install zsh
 ```
 
-5. 安裝 oh-my-zsh
+**_5._** 安裝 oh-my-zsh
 ```
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ```
 
-6. 安裝 zsh theme: powerlevel10k
+**_6._** 安裝 zsh theme: powerlevel10k
 ```
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ```
 
-7. 安裝zsh plugin
+**_7._** 安裝zsh plugin
 ```
 git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+```
+```
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 ```
  
-9. 修改.zshrc <br>
+**_8._** 修改.zshrc <br>
 ```
 vim ~/.zshrc
 ```
@@ -60,16 +73,17 @@ plugins=(
 >修改完後重新打開iterm 會自動跑powerlevel10k的設定，根據喜好調整
 
 
-8. 調整提示文字顏色
+**_9._** 調整提示文字顏色
 ```
 vim ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 ```
 
 ```
+找到以下內容並修改
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=10'
 ```
 
-9. 加入簡寫
+**_10._** 加入簡寫
 
 ```
 vim ~/.oh-my-zsh/custom/alias.zsh
@@ -77,26 +91,28 @@ vim ~/.oh-my-zsh/custom/alias.zsh
 
 ```
 alias vim=‘nvim’ 
+//這裡vim可以改成任何想稱呼vim的名字
+//例如 alias v = 'nvim'
 ```
 
 
-10. Keyboard Repeat Rate<br>
+**_11._** Keyboard Repeat Rate<br>
 設定 > 鍵盤<br>
 鍵盤重複速率(不然原本的vim移動太慢了)<br>
 <img width="469" alt="Key repeat rate" src="https://github.com/Luca0929/vim-config/assets/52985205/cc54b138-3cce-497c-a4b5-a77c8bb90178">
 
-11. 配置neovim
+**_12._** 配置neovim
 ```
 mkdir ~/.config
 git clone https://github.com/Luca0929/vim-config.git ~/.config/nvim
 ```
 
-12. 安裝packer.nvim
+**_13._** 安裝packer.nvim
 ```
 git clone --depth 1 https://github.com/wbthomason/packer.nvim\ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 ```
 
-13 Install Plugins
+**_14._** 安裝插件
 ```
 brew install deno
 ```
@@ -105,6 +121,7 @@ brew install deno
 vim
 :PackerSync
 ```
+**_15._** 可以開始使用了！
 ---
 
 ## 按鍵設定
