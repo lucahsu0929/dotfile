@@ -14,14 +14,17 @@ map("n", "<leader>ac", "gg0vG\"+y", opt)
 map("v", "<leader>c", "\"+y", opt)
 map("n", "<tab>j", ":bprevious<CR>", opt) --previous buffer
 map("n", "<tab>k", ":bnext<CR>", opt) --next buffer
-map("n", "<leader>q", ":bdelete<CR>", opt) --delete buffer
+map("n", "<tab>q", ":bdelete<CR>", opt) --delete buffer
 map("n", "<leader>m", ":PeekOpen<CR>", opt) --markdown
 map("n", "<leader>.", ":FloatermNew<CR>", opt)
 map("t", "<leader>.", "<c-\\><c-n>:FloatermKill<CR>", opt)
-map("n", "<leader>s", ":source %<CR>", opt) --refresh current file
+-- map("n", "<leader>s", ":source %<CR>", opt) --refresh current file
 
+--navigation
 map('n', 'j', '<Plug>(accelerated_jk_gj)', {})
 map('n', 'k', '<Plug>(accelerated_jk_gk)', {})
+map('n', '<C-j>', '9j', {})
+map('n', '<C-k>', '9k', {})
 
 map('v', '<', '<gv', opt)
 map('v', '>', '>gv', opt)
