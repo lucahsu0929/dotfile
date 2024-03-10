@@ -4,6 +4,24 @@ return require('packer').startup(function()
 
     use 'sainnhe/everforest'
 
+
+    use {
+    'goolord/alpha-nvim',
+    config = function ()
+        require'alpha'.setup(require'alpha.themes.dashboard'.config)
+    end
+    }
+
+
+
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+    }
+    
+    
+    use 'folke/tokyonight.nvim'
+
     use({
     "iamcco/markdown-preview.nvim",
     run = function() vim.fn["mkdp#util#install"]() end,
@@ -58,7 +76,6 @@ return require('packer').startup(function()
     })
     
     use { 'rainbowhxch/accelerated-jk.nvim' }
-    use 'vim-airline/vim-airline'
 
 
 end)

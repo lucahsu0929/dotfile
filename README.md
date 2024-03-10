@@ -20,12 +20,16 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-**_2._** 安裝iterm
+**_2._** 安裝iterm & neovim
 
 
 
 ```
 brew install --cask iterm2
+```
+
+```
+brew install nvim
 ```
 
 **_3._** 修改Iterm主題
@@ -111,7 +115,7 @@ vim ~/.oh-my-zsh/custom/alias.zsh
 ```
 
 ```
-alias vim=‘nvim’ 
+alias vim='nvim'
 //這裡vim可以改成任何想稱呼vim的名字
 //例如 alias v = 'nvim'
 ```

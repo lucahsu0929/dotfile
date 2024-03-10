@@ -7,6 +7,9 @@ lua require('plugin-config/nvim-treesitter')
 lua require('plugin-config/telescope')
 lua require('plugin-config/autoclose') 
 lua require('plugin-config/acceleratedjk')
+lua require('plugin-config/alpha')
+lua require('plugin-config/lualine')
+
 
 set smartindent
 set tabstop=4
