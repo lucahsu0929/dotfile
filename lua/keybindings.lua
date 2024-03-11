@@ -10,7 +10,6 @@ local opt = {noremap = true, silent = true }
 
 map("i", "jk", "<ESC>", opt)
 map("v", "<leader>cs", "\"+y", opt)
-map("n", "<leader>m", ":MarkdownPreview<CR>", opt) --markdown
 map("n", "<leader>.", ":FloatermNew<CR>", opt)
 map("t", "<leader>.", "<c-\\><c-n>:FloatermKill<CR>", opt)
 -- map("n", "<leader>s", ":source %<CR>", opt) --refresh current file

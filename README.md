@@ -12,6 +12,7 @@
 * 內建Terminal，不必再進進出出
 * nvimtree側邊資料瀏覽
 * 快速跳轉，大量減少鼠標依賴
+* whichkey按鍵引導
 
 ##  安裝步驟
 **_1._** 安裝brew
@@ -158,9 +159,9 @@ vim
 ```
 **_15._** 學習vim、練習打字速度
 
-<img width="50%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
-<img width="50%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
-<img width="50%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/42e2678b-c2b7-4ac8-a646-f4c0ded4b509"> <br>
+<img width="70%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
+<img width="70%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
+<img width="70%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/42e2678b-c2b7-4ac8-a646-f4c0ded4b509"> <br>
 
 [我學會盲打的地方，記得登入紀錄學習歷程](https://www.keybr.com/) <br>
 [好看的打字練習](https://monkeytype.com/)

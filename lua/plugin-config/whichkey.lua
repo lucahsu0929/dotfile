@@ -81,6 +81,7 @@ local opts = {
 local mappings = {
     ["q"] = { "<cmd>q<CR>", "Quit" },  -- Close current file
     ["w"] = { "<cmd>w!<CR>", "Save" }, -- Save current file
+    ["m"] = { "<cmd>MarkdownPreview<cr>", "MarkdownPreview" },
     ["a"] = { "<cmd>Alpha<cr>", "Alpha" },
     ["h"] = { "<cmd>HopWord<CR>", "JumpTo" },  -- Close current file
 
