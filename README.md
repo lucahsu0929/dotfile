@@ -149,12 +149,16 @@ brew install yarn
 ```
 
 ```
+brew install ripgrep
+```
+
+```
 vim
 :PackerSync
 ```
 **_15._** 學習vim、練習打字速度
 
-![The-learning-curve-With-the-introduction-and-implementation-of-a-new-technique-high](https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49)
+<img width="50%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
 <img width="50%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
 <img width="50%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/42e2678b-c2b7-4ac8-a646-f4c0ded4b509"> <br>
 
@@ -236,20 +240,25 @@ vim
 | 自定義按鍵   | 模式 | 動作             | 使用說明/來源
 | ----- |:----:| ------------------ | ------
 | <kbd>jk</kbd>| 𝐈| 切換到普通模式 | 
-| <kbd>Space</kbd> + <kbd>j</kbd>| 𝐍 | 快速跳轉到任意單字 |hop.nvim 
+| <kbd>Space</kbd> + <kbd>h</kbd>| 𝐍 | 快速跳轉到任意單字 |hop.nvim 
 | <kbd>ctrl</kbd> + <kbd>j</kbd>| 𝐍 | 快速往下移動 | 
 | <kbd>ctrl</kbd> + <kbd>k</kbd>| 𝐍 | 快速往上移動 | 
 | <kbd>Space</kbd> + <kbd>.</kbd>| 𝐍 | 打開/關閉 Terminal | floatterm.nvim
 | <kbd>Space</kbd> + <kbd>r</kbd>| 𝐍 𝐕 𝐈| 編譯&執行 | 支援C/C++/Python/Java<br>asyncrun.nvim
-| <kbd>tab</kbd> + <kbd>q</kbd>| 𝐍 | 關閉tab(buffer) | 
-| <kbd>tab</kbd> + <kbd>j</kbd>| 𝐍 | 上一個tab(buffer) | 
-| <kbd>tab</kbd> + <kbd>k</kbd>| 𝐍 | 下一個tab(buffer) | 
+| <kbd>space</kbd> + <kbd> b </kbd> + <kbd>q</kbd>| 𝐍 | 關閉tab(buffer) | 
+| <kbd>space</kbd> + <kbd> b </kbd > + <kbd>j</kbd>| 𝐍 | 上一個tab(buffer) | 
+| <kbd>space</kbd> + <kbd> b </kbd > + <kbd>k</kbd>| 𝐍 | 下一個tab(buffer) | 
 | <kbd>Space</kbd> + <kbd>w</kbd>| 𝐈| 保存文件 | 
-| <kbd>Space</kbd> + <kbd>a</kbd> + <kbd>c</kbd>| 𝐕 | 複製整份文件 | 
-| <kbd>Space</kbd> + <kbd>c</kbd>| 𝐕 | 複製選取文字 | 用可視模式選取
-| <kbd>Space</kbd> + <kbd>f</kbd> + <kbd>f</kbd>| 𝐕 | 快速查找文件 |搜索文件所在資料夾內所有檔案 <br> telescope.nvim
+| <kbd>Space</kbd> + <kbd>c</kbd> + <kbd>a</kbd>| 𝐕 | 複製整份文件 | 
+| <kbd>Space</kbd> + <kbd>c</kbd> + <kbd>s</kbd>| 𝐕 | 複製選取文字 | 用可視模式選取
 | <kbd>Space</kbd> + <kbd>m</kbd>| 𝐍 | 打開MarkDown預覽 | markdown-preview.nvim
 
+### telescope 操作（快速搜索) 
+| 按鍵   | 動作            | 注意事項|
+| ----- |:----:| ----- |
+| <kbd>Space</kbd> + <kbd>f</kbd> + <kbd>f</kbd>| 𝐕 | 快速查找文件 |搜索文件所在資料夾內所有檔案 <br> telescope.nvim
+| <kbd>Space</kbd> + <kbd>f</kbd> + <kbd>r</kbd>| 𝐕 | 瀏覽最近打開的文件 |搜索文件所在資料夾內所有檔案 <br> telescope.nvim
+| <kbd>Space</kbd> + <kbd>f</kbd> + <kbd>t</kbd>| 𝐕 | 尋找包含...文字的文件 |搜索文件所在資料夾內所有檔案 <br> telescope.nvim
 
 ### nvimtree 操作（資料探索) 
 | 按鍵   | 動作            | 注意事項|
