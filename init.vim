@@ -9,6 +9,7 @@ lua require('plugin-config/autoclose')
 lua require('plugin-config/acceleratedjk')
 lua require('plugin-config/alpha')
 lua require('plugin-config/lualine')
+lua require('plugin-config/whichkey')
 
 
 set smartindent
@@ -32,9 +33,8 @@ if has('termguicolors')
     let g:airline_theme = 'everforest'
 
 
-
-map <leader>r :call CompileRunGcc()<CR>
-func! CompileRunGcc() 
+map <leader>r :call CompileRun()<CR>
+func! CompileRun()
 
 	  exec "w"
 
