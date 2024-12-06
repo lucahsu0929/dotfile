@@ -24,5 +24,7 @@ map('v', '<', '<gv', opt)
 map('v', '>', '>gv', opt)
 
 
+-- delete word
+map('n', 'dw', 'evbd', {})
 
 

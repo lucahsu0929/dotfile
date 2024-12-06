@@ -66,3 +66,7 @@ endfunc
 
 nmap <silent> <leader>. :FloatermNew<cr>
 tmap <silent> <leader>. <c-\><c-n>:FloatermKill<cr>
+
+highlight Normal ctermbg=none guibg=none
+highlight NonText ctermbg=none guibg=none
+highlight SignColumn ctermbg=none guibg=none
