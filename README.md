@@ -183,8 +183,40 @@ pbcopy < ~/.ssh/id_rsa.pub // 複製ssh key、去github中添加
 
 ```
 
+**_17._** 常用的軟體
+```
+Betterdisplay // 2k monitor
+MOS // Mouse
+Caffein // prevent from sleeping
+Raycast // must need
+Karabiner // remapping
+Iterm 
+Spotify
+Firefox
 
-**_17._** 學習vim、練習打字速度
+Betterdisplay setting
+1. 先建立一個新的解析度 
+2. 開啟高解析度hiPDI
+
+// 引用自 https://www.bilibili.com/opus/766945519935160359
+
+找到Edit the default system configuration of this display，勾选。
+
+然后再找到Add custom scled resolution，勾选。
+
+
+P.S. 2K显示器（16:9）推荐设置为2048X1152。可根据实际使用的显示器分辨率，选择设置HiDPI分辨率，如2560X1440缩放1.25倍，就变成了2048X1152。
+
+上述步骤完成后，点击下方的Apply Change，重启电脑！
+
+3、重启电脑后，打开系统设置-显示器，自定义的HiDPI分辨率已经可选，大功告成！
+
+此方法仅需设置一次，以后不需要保持开启BetterDisplay软件，也能使用设置的HiDPI分辨率。
+
+```
+
+
+**_18._** 學習vim、練習打字速度
 
 <img width="70%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
 <img width="70%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
