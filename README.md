@@ -168,7 +168,23 @@ vim
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 ```
 
-**_16._** 學習vim、練習打字速度
+**_16._* 使用github
+```
+// 先產生ssh key
+ssh-keygen -t rsa -C "your_email@example.com" // 一直按enter就好
+
+pbcopy < ~/.ssh/id_rsa.pub // 複製ssh key、去github中添加
+
+//如何開始push？需要token
+//先去setting 滑到左下角 developer setting
+//產生一個token 記得要把access都打開 然後複製下來
+//第一次使用git push origin main時
+//輸入username，然後密碼輸入token
+
+```
+
+
+**_17._** 學習vim、練習打字速度
 
 <img width="70%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
 <img width="70%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
