@@ -67,6 +67,10 @@ git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.o
 ```
 ```
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+
+echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
+
+source ./zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 ```
 
 ```
@@ -137,7 +141,7 @@ git clone https://github.com/wbthomason/packer.nvim\
 **_13._** 配置neovim
 ```
 mkdir ~/.config
-git clone https://github.com/Luca0929/vim-config.git ~/.config/nvim
+git clone ~https://github.com/lucahsu0929/dotfile /.config/nvim
 ```
 
 **_14._** 安裝插件
@@ -157,7 +161,14 @@ brew install ripgrep
 vim
 :PackerSync
 ```
-**_15._** 學習vim、練習打字速度
+
+**_15._** 處理錯誤訊息
+```
+在.zshrc中加入
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+```
+
+**_16._** 學習vim、練習打字速度
 
 <img width="70%" alt="Screenshot 2024-03-05 at 9 19 48 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/88003380-43ab-48cb-8ef5-51875a228c49"> <br>
 <img width="70%" alt="Screenshot 2024-03-05 at 9 11 19 PM" src="https://github.com/Luca0929/vim-config/assets/52985205/be6fc97f-4370-4efd-bd0d-f1491a1e99cc"> <br>
