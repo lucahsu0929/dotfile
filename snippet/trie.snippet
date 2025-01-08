@@ -52,6 +52,46 @@ int search(TrieNode *root, const char *key) {
     return -1; // Key does not exist
 }
 
+// Delete a key from the Trie
+// Returns true if the key is successfully deleted, false if key is not found
+bool delete(TrieNode *root, const char *key, int depth) {
+    // Base case: if we reach the end of the key
+    if (root == NULL) {
+        return false; // Key not found
+    }
+
+    // If we have not reached the end of the key, recurse
+    if (depth < strlen(key)) {
+        int index = key[depth] - 'a';
+        if (delete(root->children[index], key, depth + 1)) {
+            // After deleting the child node, check if it can be deleted
+            if (root->children[index] != NULL && !root->children[index]->isEndOfWord) {
+                bool hasNoChildren = true;
+                for (int i = 0; i < 26; i++) {
+                    if (root->children[index]->children[i] != NULL) {
+                        hasNoChildren = false;
+                        break;
+                    }
+                }
+                // If the node has no children, delete it
+                if (hasNoChildren) {
+                    free(root->children[index]);
+                    root->children[index] = NULL;
+                }
+            }
+            return true;
+        }
+    } else {
+        // If we are at the end of the key, simply remove the value and mark isEndOfWord false
+        if (root->isEndOfWord) {
+            root->isEndOfWord = false; // Mark the node as no longer being the end of a key
+            root->value = -1; // Clear the value
+            return true;
+        }
+    }
+    return false; // Key not found
+}
+
 // Helper function to free memory allocated for the Trie
 void freeTrie(TrieNode *root) {
     for (int i = 0; i < 26; i++) {
@@ -76,6 +116,10 @@ int main() {
     printf("Value of 'banana': %d\n", search(root, "banana")); // Output: 20
     printf("Value of 'grape': %d\n", search(root, "grape"));   // Output: 30
     printf("Value of 'orange': %d\n", search(root, "orange")); // Output: -1
+
+    // Delete a key and check again
+    printf("Deleting 'banana': %s\n", delete(root, "banana", 0) ? "Success" : "Failed");
+    printf("Value of 'banana' after deletion: %d\n", search(root, "banana")); // Output: -1
 
     // Free allocated memory
     freeTrie(root);
