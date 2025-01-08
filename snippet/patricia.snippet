@@ -1,0 +1,130 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define the structure for the Patricia Trie Node
+typedef struct PatriciaNode {
+    char *key;                  // The key for this node (stores a prefix of the string)
+    int value;                  // Value associated with the key
+    struct PatriciaNode *left;  // Left child pointer
+    struct PatriciaNode *right; // Right child pointer
+} PatriciaNode;
+
+// Create a new Patricia Trie node
+PatriciaNode* createNode(const char *key, int value) {
+    PatriciaNode *node = (PatriciaNode *)malloc(sizeof(PatriciaNode));
+    node->key = strdup(key);      // Duplicate the key string
+    node->value = value;          // Set the value
+    node->left = node->right = NULL; // Initialize children to NULL
+    return node;
+}
+
+// Insert a key-value pair into the Patricia Trie
+PatriciaNode* insert(PatriciaNode *root, const char *key, int value) {
+    if (root == NULL) {
+        return createNode(key, value); // If root is NULL, create a new node
+    }
+
+    int cmp = strncmp(key, root->key, strlen(root->key)); // Compare with root key prefix
+
+    if (cmp == 0) {
+        // If keys match, update the value and recurse to the appropriate subtree
+        if (strlen(key) > strlen(root->key)) {
+            root->left = insert(root->left, key + strlen(root->key), value);
+        } else if (strlen(key) < strlen(root->key)) {
+            root->right = insert(root->right, key + strlen(root->key), value);
+        } else {
+            root->value = value; // Exact match found, update value
+        }
+    } else if (cmp < 0) {
+        root->left = insert(root->left, key, value); // Insert into the left subtree
+    } else {
+        root->right = insert(root->right, key, value); // Insert into the right subtree
+    }
+    return root;
+}
+
+// Search for a key in the Patricia Trie
+PatriciaNode* search(PatriciaNode *root, const char *key) {
+    if (root == NULL) {
+        return NULL; // Key not found
+    }
+
+    int cmp = strncmp(key, root->key, strlen(root->key));
+    if (cmp == 0) {
+        // Exact match found, return the node
+        if (strlen(key) == strlen(root->key)) {
+            return root;
+        }
+        // Otherwise, continue searching the appropriate subtree
+        if (strlen(key) > strlen(root->key)) {
+            return search(root->left, key + strlen(root->key));
+        }
+    } else if (cmp < 0) {
+        return search(root->left, key); // Search in the left subtree
+    } else {
+        return search(root->right, key); // Search in the right subtree
+    }
+    return NULL; // Key not found
+}
+
+// Delete a key from the Patricia Trie
+PatriciaNode* delete(PatriciaNode *root, const char *key) {
+    if (root == NULL) {
+        return NULL; // Key not found
+    }
+
+    int cmp = strncmp(key, root->key, strlen(root->key));
+    if (cmp == 0) {
+        // Exact match found, delete this node
+        if (strlen(key) == strlen(root->key)) {
+            free(root->key); // Free the key
+            free(root);       // Free the node
+            return NULL;      // Return NULL to remove the node
+        }
+        // Continue deleting from the left or right subtree
+        if (strlen(key) > strlen(root->key)) {
+            root->left = delete(root->left, key + strlen(root->key));
+        } else {
+            root->right = delete(root->right, key + strlen(root->key));
+        }
+    } else if (cmp < 0) {
+        root->left = delete(root->left, key); // Delete in the left subtree
+    } else {
+        root->right = delete(root->right, key); // Delete in the right subtree
+    }
+    return root;
+}
+
+// A helper function to print the Patricia Trie (In-Order Traversal)
+void printTrie(PatriciaNode *root) {
+    if (root != NULL) {
+        printTrie(root->left);
+        printf("Key: %s, Value: %d\n", root->key, root->value);
+        printTrie(root->right);
+    }
+}
+
+int main() {
+    PatriciaNode *root = NULL;
+    root = insert(root, "apple", 10);
+    root = insert(root, "app", 5);
+    root = insert(root, "banana", 20);
+
+    printf("Trie after insertions:\n");
+    printTrie(root);
+
+    PatriciaNode *result = search(root, "app");
+    if (result != NULL) {
+        printf("Found key 'app' with value %d\n", result->value);
+    } else {
+        printf("Key 'app' not found\n");
+    }
+
+    root = delete(root, "app");
+    printf("\nTrie after deletion of 'app':\n");
+    printTrie(root);
+
+    return 0;
+}
+

@@ -1,0 +1,464 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct FibNode {
+    int key;
+    int degree;
+    struct FibNode* parent;
+    struct FibNode* child;
+    struct FibNode* left;
+    struct FibNode* right;
+    int mark;
+} FibNode;
+
+typedef struct FibHeap {
+    FibNode* min;
+    int size;
+} FibHeap;
+
+FibNode* createFibNode(int key) {
+    FibNode* node = (FibNode*)malloc(sizeof(FibNode));
+    node->key = key;
+    node->degree = 0;
+    node->parent = NULL;
+    node->child = NULL;
+    node->left = node->right = node;
+    node->mark = 0;
+    return node;
+}
+
+FibHeap* createFibHeap() {
+    FibHeap* heap = (FibHeap*)malloc(sizeof(FibHeap));
+    heap->min = NULL;
+    heap->size = 0;
+    return heap;
+}
+
+void insert(FibHeap* heap, FibNode* node) 
+{
+    if (heap->min == NULL) 
+        heap->min = node; 
+    else 
+    {
+        node->left = heap->min;
+        node->right = heap->min->right;
+        heap->min->right->left = node;
+        heap->min->right = node;
+        if (node->key < heap->min->key) 
+            heap->min = node;
+    }
+    heap->size++;
+}
+
+typedef struct QueueNode {
+    FibNode* node;
+    struct QueueNode* next;
+} QueueNode;
+
+typedef struct Queue {
+    QueueNode* front;
+    QueueNode* rear;
+    int size;
+} Queue;
+
+
+void init_queue(Queue* q) 
+{
+    q->front = q->rear = NULL;
+    q->size = 0;
+}
+
+void enqueue(Queue* q, FibNode* node) 
+{
+    QueueNode* temp = (QueueNode*)malloc(sizeof(QueueNode));
+    temp->node = node;
+    temp->next = NULL;
+    if (q->rear == NULL) 
+        q->front = q->rear = temp;
+    else
+    {
+        q->rear->next = temp;
+        q->rear = temp;
+    }
+    q->size++;
+}
+
+FibNode* dequeue(Queue* q) 
+{
+    if (q->front == NULL)
+        return NULL;
+    QueueNode* temp = q->front;
+    FibNode* node = temp->node;
+    q->front = q->front->next;
+    if (q->front == NULL)
+        q->rear = NULL;
+    free(temp);
+    q->size--;
+    return node;
+}
+
+int is_empty(Queue* q) 
+{
+    return q->front == NULL;
+}
+
+int compare_nodes_qsort(const void* a, const void* b) 
+{
+    FibNode* nodeA = *(FibNode**)a;
+    FibNode* nodeB = *(FibNode**)b;
+    return nodeA->key - nodeB->key;
+}
+
+void link(FibHeap* heap, FibNode* y, FibNode* x) 
+{
+    y->left->right = y->right;
+    y->right->left = y->left;
+    
+    y->parent = x;
+    if (x->child == NULL) 
+    {
+        x->child = y;
+        y->left = y->right = y;
+    } 
+    else 
+    {
+        FibNode* current_child = x->child;
+        do 
+        {
+            if (y->key < current_child->key)
+                break;
+            current_child = current_child->right;
+        } while (current_child != x->child);
+        
+        y->left = current_child->left;
+        y->right = current_child;
+        current_child->left->right = y;
+        current_child->left = y;
+        
+        if (y->key < x->child->key)
+            x->child = y;
+    }
+    x->degree++;
+    y->mark = 0;
+}
+
+
+void consolidate(FibHeap* heap) 
+{
+    if (heap->min == NULL)
+        return;
+
+    int array_size = 20; 
+    FibNode** A = (FibNode**)malloc(array_size * sizeof(FibNode*));
+    for (int i = 0; i < array_size; i++)
+        A[i] = NULL;
+
+    FibNode* start, *current;
+    current = start = heap->min;
+    int count = 0;
+    do 
+    {
+        count++;
+        current = current->right;
+    } while (current != start);
+
+    FibNode** roots = (FibNode**)malloc(count * sizeof(FibNode*));
+    current = start;
+    for (int i = 0; i < count; i++) 
+    {
+        roots[i] = current;
+        current = current->right;
+    }
+
+    qsort(roots, count, sizeof(FibNode*), compare_nodes_qsort);
+
+    for (int i = 0; i < count; i++) 
+    {
+        FibNode* x = roots[i];
+        int d = x->degree;
+        while (A[d] != NULL) 
+        {
+            FibNode* y = A[d];
+            if (x->key > y->key) 
+            {
+                FibNode* temp = x;
+                x = y;
+                y = temp;
+            }
+            link(heap, y, x);
+            A[d] = NULL;
+            d++;
+        }
+        A[d] = x;
+    }
+
+    heap->min = NULL;
+    for (int i = 0; i < array_size; i++) 
+    {
+        if (A[i] == NULL) 
+            continue;
+        
+        if (heap->min == NULL) 
+        {
+            heap->min = A[i];
+            A[i]->left = A[i]->right = A[i];
+        } 
+        else 
+        {
+            A[i]->left = heap->min;
+            A[i]->right = heap->min->right;
+            heap->min->right->left = A[i];
+            heap->min->right = A[i];
+            if (A[i]->key < heap->min->key)
+                heap->min = A[i];
+        }
+    }
+
+    free(A);
+    free(roots);
+}
+
+void cut(FibHeap* heap, FibNode* x, FibNode* y) 
+{
+    if (x->right == x) 
+        y->child = NULL; 
+    else 
+    {
+        x->left->right = x->right;
+        x->right->left = x->left;
+        if (y->child == x)
+            y->child = x->right;
+    }
+    y->degree--;
+
+    x->parent = NULL;
+    x->left = heap->min;
+    x->right = heap->min->right;
+    heap->min->right->left = x;
+    heap->min->right = x;
+    x->mark = 0;
+}
+
+void cascading_cut(FibHeap* heap, FibNode* y) 
+{
+    FibNode* z = y->parent;
+    if (z != NULL) 
+    {
+        if (y->mark == 0) 
+            y->mark = 1;
+        else
+        {
+            cut(heap, y, z);
+            cascading_cut(heap, z);
+        }
+    }
+}
+
+
+void decrease_key(FibHeap* heap, FibNode* x, int delta) 
+{
+    x->key -= delta;
+    FibNode* y = x->parent;
+    if (y != NULL && x->key < y->key) 
+    {
+        cut(heap, x, y);
+        cascading_cut(heap, y);
+    }
+    if (x->key < heap->min->key)
+        heap->min = x;
+}
+
+FibNode* find_node_recursive(FibNode* node, int key) 
+{
+    if (node == NULL)
+        return NULL;
+    FibNode* current = node;
+    do 
+    {
+        if (current->key == key)
+            return current;
+        FibNode* found = find_node_recursive(current->child, key);
+        if (found != NULL)
+            return found;
+        current = current->right;
+    } while (current != node);
+    return NULL;
+}
+
+FibNode* find_node(FibHeap* heap, int key) 
+{
+    if (heap->min == NULL)
+        return NULL;
+    return find_node_recursive(heap->min, key);
+}
+
+FibNode* extract_min(FibHeap* heap) 
+{
+    if(heap->min == NULL)
+        return NULL;
+    FibNode* z = heap->min;
+    
+    if (z->child != NULL) 
+    {
+        FibNode* child = z->child;
+        do 
+        {
+            FibNode* next = child->right;
+            child->left->right = child->right;
+            child->right->left = child->left;
+            
+            child->parent = NULL;
+            child->left = heap->min;
+            child->right = heap->min->right;
+            heap->min->right->left = child;
+            heap->min->right = child;
+            child = next;
+        } while (child != z->child);
+    }
+
+    if (z->right == z) 
+        heap->min = NULL;
+    else 
+    {
+        heap->min = z->right;
+        z->left->right = z->right;
+        z->right->left = z->left;
+    }
+    heap->size--;
+    if (heap->size > 0) 
+        consolidate(heap);
+    return z;
+}
+
+void delete_node(FibHeap* heap, FibNode* x)
+{
+    decrease_key(heap, x, 10000000);
+    extract_min(heap);
+}
+
+void free_heap(FibNode* node) 
+{
+    if (node == NULL)
+        return;
+    FibNode* start, *current;
+    current = start = node;
+    do 
+    {
+        FibNode* next = current->right;
+        free_heap(current->child);
+        free(current);
+        current = next;
+    } while (current != start);
+}
+
+void level_order(FibNode* root) 
+{
+    if (root == NULL)
+        return;
+    Queue q;
+    init_queue(&q);
+    enqueue(&q, root);
+    int first = 1; 
+
+    while (!is_empty(&q)) 
+    {
+        FibNode* current = dequeue(&q);
+        if (!first)
+            printf(" ");
+        printf("%d", current->key);
+        first = 0;
+        if (current->child != NULL) 
+        {
+            FibNode* child = current->child;
+            do 
+            {
+                enqueue(&q, child);
+                child = child->right;
+            } while (child != current->child);
+        }
+    }
+    printf("\n");
+}
+
+void print_heap(FibHeap* heap) 
+{
+    if (heap->min == NULL)
+        return;
+
+    int max_degree = 0;
+    FibNode* start, *current;
+    current = start = heap->min;
+    do 
+    {
+        if (current->degree > max_degree) 
+            max_degree = current->degree;
+        current = current->right;
+    } while (current != start);
+
+    FibNode** degreeArray = (FibNode**)calloc(max_degree + 1 , sizeof(FibNode*));
+
+    current = start;
+    do 
+    {
+        degreeArray[current->degree] = current;
+        current = current->right;
+    } while (current != start);
+
+    
+    for (int i = 0; i <= max_degree; i++) 
+        if (degreeArray[i] != NULL)
+            level_order(degreeArray[i]);
+    free(degreeArray);
+}
+
+int main() {
+    FibHeap* heap = createFibHeap();
+    char command[64];
+
+    while (1) 
+    {
+        if (scanf("%s", command) == EOF) 
+            break;
+        
+        if (strcmp(command, "insert") == 0) 
+        {
+            int key;
+            scanf("%d", &key);
+            FibNode* node = createFibNode(key);
+            insert(heap, node);
+        }
+        else if (strcmp(command, "delete") == 0) 
+        {
+            int key;
+            scanf("%d", &key);
+            FibNode* node = find_node(heap, key);
+            if (node != NULL) 
+                delete_node(heap, node);
+        }
+        else if (strcmp(command, "decrease") == 0) 
+        {
+            int key, value;
+            scanf("%d %d", &key, &value);
+            FibNode* node = find_node(heap, key);
+            if (node != NULL) 
+                decrease_key(heap, node, value);
+        }
+        else if (strcmp(command, "extract-min") == 0) 
+        {
+            FibNode* minNode = extract_min(heap);
+            if (minNode) 
+                free(minNode);
+        }
+        else if (strcmp(command, "exit") == 0) 
+            break;
+        else 
+            printf("command not found\n");
+        
+    }
+    print_heap(heap);
+    if (heap->min != NULL)
+        free_heap(heap->min);
+    free(heap);
+    return 0;
+}

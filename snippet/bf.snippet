@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+#define BLOOM_FILTER_SIZE 256  // 位陣列的大小
+#define NUM_HASHES 2           // 使用的哈希函數數量
+
+typedef struct {
+    uint8_t bits[BLOOM_FILTER_SIZE / 8];
+} BloomFilter;
+
+void set_bit(BloomFilter *filter, uint32_t index) {
+    filter->bits[index / 8] |= (1 << (index % 8));
+}
+
+int check_bit(const BloomFilter *filter, uint32_t index) {
+    return (filter->bits[index / 8] & (1 << (index % 8))) != 0;
+}
+
+uint32_t hash1(const char *key) {
+    uint32_t hash = 0;
+    while (*key) {
+        hash = (hash * 31) + *key++;
+    }
+    return hash % BLOOM_FILTER_SIZE;
+}
+
+uint32_t hash2(const char *key) {
+    uint32_t hash = 0;
+    while (*key) {
+        hash = (hash * 17) + *key++;
+    }
+    return hash % BLOOM_FILTER_SIZE;
+}
+
+void init_bloom_filter(BloomFilter *filter) {
+    memset(filter->bits, 0, sizeof(filter->bits));
+}
+
+void insert_bloom_filter(BloomFilter *filter, const char *key) {
+    set_bit(filter, hash1(key));
+    set_bit(filter, hash2(key));
+}
+
+int might_contain_bloom_filter(const BloomFilter *filter, const char *key) {
+    return check_bit(filter, hash1(key)) && check_bit(filter, hash2(key));
+}
+
+int main() {
+    BloomFilter filter;
+    init_bloom_filter(&filter);
+
+    // insert
+    const char *keys_to_insert[] = {"apple", "banana", "cherry"};
+    for (int i = 0; i < 3; i++) {
+        insert_bloom_filter(&filter, keys_to_insert[i]);
+    }
+
+    // check exist
+    const char *keys_to_check[] = {"apple", "banana", "cherry", "date", "fig"};
+    for (int i = 0; i < 5; i++) {
+        printf("'%s' is %sin the Bloom Filter.\n",
+               keys_to_check[i],
+               might_contain_bloom_filter(&filter, keys_to_check[i]) ? "" : "not ");
+    }
+
+    return 0;
+}
+

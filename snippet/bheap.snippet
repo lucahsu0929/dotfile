@@ -1,0 +1,185 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+typedef struct BinomialNode {
+    int key;
+    int degree;
+    struct BinomialNode *parent;
+    struct BinomialNode *child;
+    struct BinomialNode *sibling;
+} BinomialNode;
+
+typedef struct BinomialHeap {
+    BinomialNode *head;
+} BinomialHeap;
+
+BinomialNode* createNode(int key) {
+    BinomialNode* node = (BinomialNode*)malloc(sizeof(BinomialNode));
+    node->key = key;
+    node->degree = 0;
+    node->parent = node->child = node->sibling = NULL;
+    return node;
+}
+
+// merge two trees with same height
+void linkTrees(BinomialNode *y, BinomialNode *z) {
+    y->parent = z;
+    y->sibling = z->child;
+    z->child = y;
+    z->degree++;
+}
+
+// merge linkedlist of two trees
+BinomialNode* mergeRoots(BinomialHeap *h1, BinomialHeap *h2) {
+    BinomialNode *head = NULL;
+    BinomialNode **pos = &head;
+    
+    BinomialNode *x = h1->head;
+    BinomialNode *y = h2->head;
+
+    while (x && y) {
+        if (x->degree <= y->degree) {
+            *pos = x;
+            x = x->sibling;
+        } else {
+            *pos = y;
+            y = y->sibling;
+        }
+        pos = &((*pos)->sibling);
+    }
+
+    *pos = (x) ? x : y;
+    return head;
+}
+
+// merge heap
+BinomialHeap* heapUnion(BinomialHeap *h1, BinomialHeap *h2) {
+    BinomialHeap *newHeap = (BinomialHeap*)malloc(sizeof(BinomialHeap));
+    newHeap->head = mergeRoots(h1, h2);
+
+    if (!newHeap->head)
+        return newHeap;
+
+    BinomialNode *prev = NULL;
+    BinomialNode *x = newHeap->head;
+    BinomialNode *next = x->sibling;
+
+    while (next) {
+        if ((x->degree != next->degree) ||
+            (next->sibling && next->sibling->degree == x->degree)) {
+            prev = x;
+            x = next;
+        } else {
+            if (x->key <= next->key) {
+                x->sibling = next->sibling;
+                linkTrees(next, x);
+            } else {
+                if (prev == NULL) {
+                    newHeap->head = next;
+                } else {
+                    prev->sibling = next;
+                }
+                linkTrees(x, next);
+                x = next;
+            }
+        }
+        next = x->sibling;
+    }
+    return newHeap;
+}
+
+void insert(BinomialHeap *heap, int key) {
+    BinomialHeap *tempHeap = (BinomialHeap*)malloc(sizeof(BinomialHeap));
+    tempHeap->head = createNode(key);
+    heap->head = heapUnion(heap, tempHeap)->head;
+}
+
+BinomialNode* findMin(BinomialHeap *heap) {
+    BinomialNode *x = heap->head;
+    BinomialNode *minNode = x;
+    int min = INT_MAX;
+
+    while (x) {
+        if (x->key < min) {
+            min = x->key;
+            minNode = x;
+        }
+        x = x->sibling;
+    }
+    return minNode;
+}
+
+//reverse child linked list
+BinomialNode* reverse(BinomialNode *node) {
+    BinomialNode *prev = NULL;
+    BinomialNode *next;
+    while (node) {
+        next = node->sibling;
+        node->sibling = prev;
+        node->parent = NULL;
+        prev = node;
+        node = next;
+    }
+    return prev;
+}
+
+int extractMin(BinomialHeap *heap) {
+    if (!heap->head)
+        return -1;
+
+    BinomialNode *minPrev = NULL;
+    BinomialNode *x = heap->head;
+    BinomialNode *minNode = x;
+    BinomialNode *prev = NULL;
+
+    int min = x->key;
+
+    while (x) {
+        if (x->key < min) {
+            min = x->key;
+            minNode = x;
+            minPrev = prev;
+        }
+        prev = x;
+        x = x->sibling;
+    }
+
+    // delete min from linkedlist
+    if (minPrev)
+        minPrev->sibling = minNode->sibling;
+    else
+        heap->head = minNode->sibling;
+
+    // reverse child and merge
+    BinomialHeap *tempHeap = (BinomialHeap*)malloc(sizeof(BinomialHeap));
+    tempHeap->head = reverse(minNode->child);
+
+    heap->head = heapUnion(heap, tempHeap)->head;
+    free(minNode);
+
+    return min;
+}
+
+BinomialHeap* createHeap() {
+    BinomialHeap *heap = (BinomialHeap*)malloc(sizeof(BinomialHeap));
+    heap->head = NULL;
+    return heap;
+}
+
+int main() {
+    BinomialHeap *heap = createHeap();
+    
+    insert(heap, 10);
+    insert(heap, 5);
+    insert(heap, 20);
+    insert(heap, 15);
+    insert(heap, 1);
+
+    printf("Min: %d\n", findMin(heap)->key);
+    
+    printf("Extract Min: %d\n", extractMin(heap));
+    printf("New Min: %d\n", findMin(heap)->key);
+
+    return 0;
+}

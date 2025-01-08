@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+// Trie node structure
+typedef struct TrieNode {
+    struct TrieNode *children[26]; // Array to store child nodes for 'a' to 'z'
+    int value; // Value associated with the key, default is -1
+    bool isEndOfWord; // Indicates if this node represents the end of a key
+} TrieNode;
+
+// Create a new Trie node
+TrieNode *createNode() {
+    TrieNode *node = (TrieNode *)malloc(sizeof(TrieNode));
+    node->isEndOfWord = false;
+    node->value = -1; // Default value is -1, indicating no valid key
+    for (int i = 0; i < 26; i++) {
+        node->children[i] = NULL; // Initialize all children to NULL
+    }
+    return node;
+}
+
+// Insert a key-value pair into the Trie
+void insert(TrieNode *root, const char *key, int value) {
+    TrieNode *current = root;
+    for (int i = 0; i < strlen(key); i++) {
+        int index = key[i] - 'a'; // Convert character to index (0-25)
+        if (!current->children[index]) {
+            current->children[index] = createNode();
+        }
+        current = current->children[index];
+    }
+    current->isEndOfWord = true; // Mark the end of the key
+    current->value = value; // Assign the value to the key
+}
+
+// Search for a key in the Trie and return its value
+// Returns -1 if the key does not exist
+int search(TrieNode *root, const char *key) {
+    TrieNode *current = root;
+    for (int i = 0; i < strlen(key); i++) {
+        int index = key[i] - 'a'; // Convert character to index
+        if (!current->children[index]) {
+            return -1; // Key does not exist
+        }
+        current = current->children[index];
+    }
+    if (current->isEndOfWord) {
+        return current->value; // Return the value if key exists
+    }
+    return -1; // Key does not exist
+}
+
+// Helper function to free memory allocated for the Trie
+void freeTrie(TrieNode *root) {
+    for (int i = 0; i < 26; i++) {
+        if (root->children[i]) {
+            freeTrie(root->children[i]);
+        }
+    }
+    free(root);
+}
+
+// Example usage
+int main() {
+    TrieNode *root = createNode();
+
+    // Insert some keys with their values
+    insert(root, "apple", 10);
+    insert(root, "banana", 20);
+    insert(root, "grape", 30);
+
+    // Search for keys
+    printf("Value of 'apple': %d\n", search(root, "apple"));   // Output: 10
+    printf("Value of 'banana': %d\n", search(root, "banana")); // Output: 20
+    printf("Value of 'grape': %d\n", search(root, "grape"));   // Output: 30
+    printf("Value of 'orange': %d\n", search(root, "orange")); // Output: -1
+
+    // Free allocated memory
+    freeTrie(root);
+
+    return 0;
+}
+

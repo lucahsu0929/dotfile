@@ -1,0 +1,169 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int key;
+    int value;
+} MinMaxHeapNode;
+
+typedef struct {
+    MinMaxHeapNode *nodes;
+    int size;
+    int capacity;
+} MinMaxHeap;
+
+MinMaxHeap* createMinMaxHeap(int capacity) {
+    MinMaxHeap *heap = (MinMaxHeap*)malloc(sizeof(MinMaxHeap));
+    heap->capacity = capacity;
+    heap->size = 0;
+    heap->nodes = (MinMaxHeapNode*)malloc(sizeof(MinMaxHeapNode) * capacity);
+    return heap;
+}
+
+void swap(MinMaxHeapNode *a, MinMaxHeapNode *b) {
+    MinMaxHeapNode temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+int getParentIndex(int index) {
+    return (index - 1) / 2;
+}
+
+int getLeftChildIndex(int index) {
+    return 2 * index + 1;
+}
+
+int getRightChildIndex(int index) {
+    return 2 * index + 2;
+}
+
+int isMinLevel(int index) {
+    return (index % 2 == 0);
+}
+
+void heapifyMin(MinMaxHeap *heap, int index) {
+    int smallest = index;
+    int left = getLeftChildIndex(index);
+    int right = getRightChildIndex(index);
+
+    if (left < heap->size && heap->nodes[left].key < heap->nodes[smallest].key)
+        smallest = left;
+
+    if (right < heap->size && heap->nodes[right].key < heap->nodes[smallest].key)
+        smallest = right;
+
+    if (smallest != index) {
+        swap(&heap->nodes[index], &heap->nodes[smallest]);
+        heapifyMin(heap, smallest);
+    }
+}
+
+void heapifyMax(MinMaxHeap *heap, int index) {
+    int largest = index;
+    int left = getLeftChildIndex(index);
+    int right = getRightChildIndex(index);
+
+    if (left < heap->size && heap->nodes[left].key > heap->nodes[largest].key)
+        largest = left;
+
+    if (right < heap->size && heap->nodes[right].key > heap->nodes[largest].key)
+        largest = right;
+
+    if (largest != index) {
+        swap(&heap->nodes[index], &heap->nodes[largest]);
+        heapifyMax(heap, largest);
+    }
+}
+
+void insert(MinMaxHeap *heap, int key, int value) {
+    if (heap->size == heap->capacity) {
+        printf("Heap is full.\n");
+        return;
+    }
+
+    MinMaxHeapNode newNode = {key, value};
+    heap->nodes[heap->size] = newNode;
+    int index = heap->size;
+    heap->size++;
+
+    while (index != 0 && heap->nodes[getParentIndex(index)].key > heap->nodes[index].key) {
+        swap(&heap->nodes[index], &heap->nodes[getParentIndex(index)]);
+        index = getParentIndex(index);
+    }
+}
+
+MinMaxHeapNode extractMin(MinMaxHeap *heap) {
+    if (heap->size <= 0) {
+        printf("Heap is empty.\n");
+        MinMaxHeapNode nullNode = {-1, -1};
+        return nullNode;
+    }
+
+    if (heap->size == 1) {
+        heap->size--;
+        return heap->nodes[0];
+    }
+
+    MinMaxHeapNode root = heap->nodes[0];
+    heap->nodes[0] = heap->nodes[heap->size - 1];
+    heap->size--;
+
+    heapifyMin(heap, 0);
+
+    return root;
+}
+
+MinMaxHeapNode extractMax(MinMaxHeap *heap) {
+    if (heap->size <= 0) {
+        printf("Heap is empty.\n");
+        MinMaxHeapNode nullNode = {-1, -1};
+        return nullNode;
+    }
+
+    if (heap->size == 1) {
+        heap->size--;
+        return heap->nodes[0];
+    }
+
+    MinMaxHeapNode root = heap->nodes[0];
+    heap->nodes[0] = heap->nodes[heap->size - 1];
+    heap->size--;
+
+    heapifyMax(heap, 0);
+
+    return root;
+}
+
+void printHeap(MinMaxHeap *heap) {
+    for (int i = 0; i < heap->size; i++) {
+        printf("Key: %d, Value: %d\n", heap->nodes[i].key, heap->nodes[i].value);
+    }
+}
+
+int main() {
+    MinMaxHeap *heap = createMinMaxHeap(10);
+
+    insert(heap, 3, 100);
+    insert(heap, 1, 50);
+    insert(heap, 2, 75);
+    insert(heap, 6, 200);
+
+    printf("Heap contents:\n");
+    printHeap(heap);
+
+    MinMaxHeapNode minNode = extractMin(heap);
+    printf("\nExtracted Min: Key: %d, Value: %d\n", minNode.key, minNode.value);
+
+    MinMaxHeapNode maxNode = extractMax(heap);
+    printf("\nExtracted Max: Key: %d, Value: %d\n", maxNode.key, maxNode.value);
+
+    printf("\nHeap after extraction:\n");
+    printHeap(heap);
+
+    free(heap->nodes);
+    free(heap);
+
+    return 0;
+}
+

@@ -1,0 +1,219 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define EMPTY -1
+//#pragma warning(disable:4996)
+
+int ans1[100] = {0};
+int ans2[100] = {0};
+int ans_count = 0;
+// Hash table structure
+
+typedef struct {
+	int* slots;
+	int m;  // Number of slots per bucket
+} Bucket;
+
+typedef struct {
+	Bucket* buckets;
+	int n;  // Number of buckets
+} HashTable;
+
+// Function prototypes
+HashTable* createHashTable(int n, int m);
+void freeHashTable(HashTable* ht);
+bool insert(HashTable* ht, int key);
+bool search(HashTable* ht, int key);
+bool deleteKey(HashTable* ht, int key);
+void displayHashTable(HashTable* ht);
+
+// Hash function
+int hashFunc(int key, int n) {
+    return key % n;
+}
+// Create a new hash table
+HashTable* createHashTable(int n, int m) {
+    HashTable* ht = (HashTable*)malloc(sizeof(HashTable));
+    ht->n = n;
+    ht->buckets = (Bucket*)malloc(n * sizeof(Bucket));
+
+    for (int i = 0; i < n; i++) {
+        ht->buckets[i].m = m;
+        ht->buckets[i].slots = (int*)malloc(m * sizeof(int));
+        for (int j = 0; j < m; j++) {
+            ht->buckets[i].slots[j] = EMPTY;
+        }
+    }
+    return ht;
+}
+
+
+// Free the hash table
+void freeHashTable(HashTable* ht) {
+    for (int i = 0; i < ht->n; i++) {
+        free(ht->buckets[i].slots);
+    }
+    free(ht->buckets);
+    free(ht);
+}
+
+// Insert a key into the hash table
+bool insert(HashTable* ht, int key) {
+    int index = hashFunc(key, ht->n);
+
+    for (int i = 0; i < ht->n; i++) 
+	{
+        int probeIndex = (index + i) % ht->n;
+
+        for (int j = 0; j < ht->buckets[probeIndex].m; j++) 
+		{
+            if (ht->buckets[probeIndex].slots[j] == EMPTY) 
+			{
+                ht->buckets[probeIndex].slots[j] = key;
+                return true;
+            }
+        }
+    }
+
+    return false; // Hash table is full
+}
+
+// Search for a key in the hash table
+bool search(HashTable* ht, int key) {
+    int index = hashFunc(key, ht->n);
+
+    for (int i = 0; i < ht->n; i++) {
+        int probeIndex = (index + i) % ht->n;
+
+        for (int j = 0; j < ht->buckets[probeIndex].m; j++) {
+            if (ht->buckets[probeIndex].slots[j] == key) {
+                ans1[ans_count] = probeIndex;
+				ans2[ans_count] = j;
+				ans_count++;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Delete a key from the hash table
+bool deleteKey(HashTable* ht, int key) {
+	int index = hashFunc(key, ht->n);
+
+	for (int i = 0; i < ht->n; i++) {
+		int probeIndex = (index + i) % ht->n;
+		for (int j = 0; j < ht->buckets[probeIndex].m; j++) {
+			if (ht->buckets[probeIndex].slots[j] == key) 
+			{
+				ht->buckets[probeIndex].slots[j] = EMPTY;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// Display the hash table
+/*
+void displayHashTable(HashTable* ht) {
+	for (int i = 0; i < ht->n; i++) {
+		printf("Bucket %d: ", i);
+		for (int j = 0; j < ht->buckets[i].m; j++) {
+			if (ht->buckets[i].slots[j].occupied) {
+				printf("%d ", ht->buckets[i].slots[j].key);
+			}
+			else {
+				printf("[EMPTY] ");
+			}
+		}
+		printf("\n");
+	}
+}
+*/
+int main() {
+	HashTable* ht = NULL;
+	int n = 10; // Number of buckets
+	int m = 2; // Slots per bucket
+	char command[20];
+	int key;
+	while (1) {
+		//printf("\nEnter command (insert <key>, search <key>, delete <key>, display, exit): ");
+		if(scanf("%s", command) != 1)
+			break;
+
+		if (strcmp(command, "bucket") == 0){
+			if(scanf("%d", &n));
+		}
+		else if (strcmp(command, "slot") == 0){
+			if(scanf("%d", &m));
+			ht = createHashTable(n, m);
+		}
+		else if (strcmp(command, "insert") == 0) {
+            if(scanf("%d", &key));
+            if (insert(ht, key)) {
+                // printf("Key %d inserted successfully.\n", key);
+            }
+            else {
+                // printf("Hash table is full or key already exists. Could not insert key %d.\n", key);
+            }
+		}
+		else if (strcmp(command, "search") == 0) {
+			if(scanf("%d", &key));
+            if (search(ht, key)) {
+				//printf("Key %d found in the hash table.\n", key);
+			}
+			else {
+				//printf("Key %d not found in the hash table.\n", key);
+			}
+            
+		}
+		else if (strcmp(command, "delete") == 0) {
+			if(scanf("%d", &key));
+			if (deleteKey(ht, key)) {
+				//printf("Key %d deleted successfully.\n", key);
+			}
+			else {
+				//printf("Key %d not found in the hash table.\n", key);
+			}
+		}
+		else if (strcmp(command, "exit") == 0) {
+			//printf("Exiting program.\n");
+			break;
+		}
+		else {
+			//printf("Invalid command. Please try again.\n");
+		}
+	}
+
+	for (int i = 0; i < ans_count ; i++)
+		printf("%d %d\n", ans1[i], ans2[i]);
+	
+	/*
+	HashTable* ht = createHashTable(n, m);
+
+	insert(ht, 3);
+	insert(ht, 13);
+	insert(ht, 4);
+	search(ht, 13);
+	deleteKey(ht,3);
+	search(ht, 4);
+	*/
+	/*
+	displayHashTable(ht);
+
+	printf("Search for 15: %s\n", search(ht, 15) ? "Found" : "Not Found");
+	printf("Delete 15: %s\n", deleteKey(ht, 15) ? "Deleted" : "Not Found");
+	printf("Search for 15: %s\n", search(ht, 15) ? "Found" : "Not Found");
+
+	displayHashTable(ht);
+*/
+	if(ht != NULL)
+		freeHashTable(ht);
+	return 0;
+}
+
+
