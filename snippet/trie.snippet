@@ -1,129 +1,105 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-// Trie node structure
-typedef struct TrieNode {
-    struct TrieNode *children[26]; // Array to store child nodes for 'a' to 'z'
-    int value; // Value associated with the key, default is -1
-    bool isEndOfWord; // Indicates if this node represents the end of a key
-} TrieNode;
+#define ALPHABET_SIZE 26 // Assume only lowercase 'a' to 'z'
+#define CHAR_TO_INDEX(c) ((c) - 'a') // Map character to index
 
-// Create a new Trie node
-TrieNode *createNode() {
-    TrieNode *node = (TrieNode *)malloc(sizeof(TrieNode));
-    node->isEndOfWord = false;
-    node->value = -1; // Default value is -1, indicating no valid key
-    for (int i = 0; i < 26; i++) {
-        node->children[i] = NULL; // Initialize all children to NULL
-    }
-    return node;
-}
+// Trie node represented as arrays
+int trie[1000000][ALPHABET_SIZE] = {{0}}; // Array for child nodes
+int isEndOfWord[1000000] = {0};          // Array to mark end of word
+int nodeCount = 1;                      // Start with root node (index 0)
 
-// Insert a key-value pair into the Trie
-void insert(TrieNode *root, const char *key, int value) {
-    TrieNode *current = root;
-    for (int i = 0; i < strlen(key); i++) {
-        int index = key[i] - 'a'; // Convert character to index (0-25)
-        if (!current->children[index]) {
-            current->children[index] = createNode();
+// Insert a word into the trie
+void insert(const char *key) {
+    int level, length = strlen(key);
+    int index, currentNode = 0;
+
+    for (level = 0; level < length; level++) {
+        index = CHAR_TO_INDEX(key[level]);
+        // If the path does not exist, create a new node
+        if (trie[currentNode][index] == 0) {
+            trie[currentNode][index] = nodeCount++;
         }
-        current = current->children[index];
+        currentNode = trie[currentNode][index];
     }
-    current->isEndOfWord = true; // Mark the end of the key
-    current->value = value; // Assign the value to the key
+    // Mark the end of the word
+    isEndOfWord[currentNode] = 1;
 }
 
-// Search for a key in the Trie and return its value
-// Returns -1 if the key does not exist
-int search(TrieNode *root, const char *key) {
-    TrieNode *current = root;
-    for (int i = 0; i < strlen(key); i++) {
-        int index = key[i] - 'a'; // Convert character to index
-        if (!current->children[index]) {
-            return -1; // Key does not exist
+// Search for a word in the trie
+int search(const char *key) {
+    int level, length = strlen(key);
+    int index, currentNode = 0;
+
+    for (level = 0; level < length; level++) {
+        index = CHAR_TO_INDEX(key[level]);
+        // If path does not exist, word is not present
+        if (trie[currentNode][index] == 0) {
+            return 0;
         }
-        current = current->children[index];
+        currentNode = trie[currentNode][index];
     }
-    if (current->isEndOfWord) {
-        return current->value; // Return the value if key exists
-    }
-    return -1; // Key does not exist
+    // Check if it is the end of a word
+    return isEndOfWord[currentNode];
 }
 
-// Delete a key from the Trie
-// Returns true if the key is successfully deleted, false if key is not found
-bool delete(TrieNode *root, const char *key, int depth) {
-    // Base case: if we reach the end of the key
-    if (root == NULL) {
-        return false; // Key not found
+// Helper function to check if a node has children
+int hasChildren(int node) {
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (trie[node][i] != 0) {
+            return 1; // Node has at least one child
+        }
+    }
+    return 0; // No children
+}
+
+// Delete a word from the trie
+int deleteWord(const char *key, int level, int currentNode) {
+    if (currentNode == 0) {
+        return 0; // Invalid node
     }
 
-    // If we have not reached the end of the key, recurse
-    if (depth < strlen(key)) {
-        int index = key[depth] - 'a';
-        if (delete(root->children[index], key, depth + 1)) {
-            // After deleting the child node, check if it can be deleted
-            if (root->children[index] != NULL && !root->children[index]->isEndOfWord) {
-                bool hasNoChildren = true;
-                for (int i = 0; i < 26; i++) {
-                    if (root->children[index]->children[i] != NULL) {
-                        hasNoChildren = false;
-                        break;
-                    }
-                }
-                // If the node has no children, delete it
-                if (hasNoChildren) {
-                    free(root->children[index]);
-                    root->children[index] = NULL;
-                }
-            }
-            return true;
+    if (level == strlen(key)) {
+        // Reached the end of the word
+        if (isEndOfWord[currentNode]) {
+            isEndOfWord[currentNode] = 0; // Unmark end of word
+            // If node has no children, it can be deleted
+            return !hasChildren(currentNode);
         }
     } else {
-        // If we are at the end of the key, simply remove the value and mark isEndOfWord false
-        if (root->isEndOfWord) {
-            root->isEndOfWord = false; // Mark the node as no longer being the end of a key
-            root->value = -1; // Clear the value
-            return true;
+        int index = CHAR_TO_INDEX(key[level]);
+        if (trie[currentNode][index] != 0) {
+            // Recursively delete the word
+            if (deleteWord(key, level + 1, trie[currentNode][index])) {
+                // If child node can be deleted, remove the link
+                trie[currentNode][index] = 0;
+                // Check if current node can also be deleted
+                return !hasChildren(currentNode) && !isEndOfWord[currentNode];
+            }
         }
     }
-    return false; // Key not found
+    return 0; // Node cannot be deleted
 }
 
-// Helper function to free memory allocated for the Trie
-void freeTrie(TrieNode *root) {
-    for (int i = 0; i < 26; i++) {
-        if (root->children[i]) {
-            freeTrie(root->children[i]);
-        }
-    }
-    free(root);
+// Public delete function
+void delete(const char *key) {
+    deleteWord(key, 0, 0);
 }
 
-// Example usage
 int main() {
-    TrieNode *root = createNode();
+    // Example usage
+    insert("hello");
+    insert("world");
+    insert("hi");
+    
+    printf("Search 'hello': %d\n", search("hello")); // Output: 1
+    printf("Search 'world': %d\n", search("world")); // Output: 1
+    printf("Search 'hi': %d\n", search("hi"));       // Output: 1
+    printf("Search 'hell': %d\n", search("hell"));   // Output: 0
 
-    // Insert some keys with their values
-    insert(root, "apple", 10);
-    insert(root, "banana", 20);
-    insert(root, "grape", 30);
-
-    // Search for keys
-    printf("Value of 'apple': %d\n", search(root, "apple"));   // Output: 10
-    printf("Value of 'banana': %d\n", search(root, "banana")); // Output: 20
-    printf("Value of 'grape': %d\n", search(root, "grape"));   // Output: 30
-    printf("Value of 'orange': %d\n", search(root, "orange")); // Output: -1
-
-    // Delete a key and check again
-    printf("Deleting 'banana': %s\n", delete(root, "banana", 0) ? "Success" : "Failed");
-    printf("Value of 'banana' after deletion: %d\n", search(root, "banana")); // Output: -1
-
-    // Free allocated memory
-    freeTrie(root);
+    delete("hello");
+    printf("Search 'hello' after deletion: %d\n", search("hello")); // Output: 0
 
     return 0;
 }
-

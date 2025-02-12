@@ -1,300 +1,256 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
-// Node color definitions
-#define RED 0
-#define BLACK 1
+// Define constants for colors
+#define RED 1
+#define BLACK 0
+#define NIL -1
 
-// Node structure
-typedef struct Node {
-    int key;
-    int value;
-    int color;
-    struct Node *left, *right, *parent;
-} Node;
+// Define the maximum number of nodes
+#define MAX_NODES 1000
 
-// Tree structure
-typedef struct RBTree {
-    Node *root;
-    Node *nil;
-} RBTree;
+// Arrays to represent node attributes
+int key[MAX_NODES];
+int parent[MAX_NODES];
+int left[MAX_NODES];
+int right[MAX_NODES];
+int color[MAX_NODES];
 
-// Function to create a new node
-Node* createNode(RBTree *tree, int key, int value) {
-    Node *node = (Node *)malloc(sizeof(Node));
-    node->key = key;
-    node->value = value;
-    node->color = RED;
-    node->left = tree->nil;
-    node->right = tree->nil;
-    node->parent = tree->nil;
-    return node;
+int root = NIL; // Root of the Red-Black Tree
+int node_count = 0; // Total number of nodes
+
+// Helper function to initialize a new node
+int create_node(int k) {
+    int index = node_count++;
+    key[index] = k;
+    parent[index] = NIL;
+    left[index] = NIL;
+    right[index] = NIL;
+    color[index] = RED; // New nodes are always red
+    return index;
 }
 
-// Function to initialize the tree
-RBTree* createTree() {
-    RBTree *tree = (RBTree *)malloc(sizeof(RBTree));
-    tree->nil = (Node *)malloc(sizeof(Node));
-    tree->nil->color = BLACK;
-    tree->root = tree->nil;
-    return tree;
+// Left rotate operation
+void left_rotate(int x) {
+    int y = right[x];
+    right[x] = left[y];
+    if (left[y] != NIL) parent[left[y]] = x;
+    parent[y] = parent[x];
+    if (parent[x] == NIL) root = y;
+    else if (x == left[parent[x]]) left[parent[x]] = y;
+    else right[parent[x]] = y;
+    left[y] = x;
+    parent[x] = y;
 }
 
-// Left rotate
-void leftRotate(RBTree *tree, Node *x) {
-    Node *y = x->right;
-    x->right = y->left;
-    if (y->left != tree->nil) {
-        y->left->parent = x;
-    }
-    y->parent = x->parent;
-    if (x->parent == tree->nil) {
-        tree->root = y;
-    } else if (x == x->parent->left) {
-        x->parent->left = y;
-    } else {
-        x->parent->right = y;
-    }
-    y->left = x;
-    x->parent = y;
+// Right rotate operation
+void right_rotate(int x) {
+    int y = left[x];
+    left[x] = right[y];
+    if (right[y] != NIL) parent[right[y]] = x;
+    parent[y] = parent[x];
+    if (parent[x] == NIL) root = y;
+    else if (x == right[parent[x]]) right[parent[x]] = y;
+    else left[parent[x]] = y;
+    right[y] = x;
+    parent[x] = y;
 }
 
-// Right rotate
-void rightRotate(RBTree *tree, Node *x) {
-    Node *y = x->left;
-    x->left = y->right;
-    if (y->right != tree->nil) {
-        y->right->parent = x;
-    }
-    y->parent = x->parent;
-    if (x->parent == tree->nil) {
-        tree->root = y;
-    } else if (x == x->parent->right) {
-        x->parent->right = y;
-    } else {
-        x->parent->left = y;
-    }
-    y->right = x;
-    x->parent = y;
-}
-
-// Fix violations after insertion
-void insertFixup(RBTree *tree, Node *z) {
-    while (z->parent->color == RED) {
-        if (z->parent == z->parent->parent->left) {
-            Node *y = z->parent->parent->right;
-            if (y->color == RED) { // Case 1
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
+// Fix the Red-Black Tree after insertion
+void insert_fixup(int z) {
+    while (color[parent[z]] == RED) {
+        if (parent[z] == left[parent[parent[z]]]) {
+            int y = right[parent[parent[z]]];
+            if (color[y] == RED) { // Case 1
+                color[parent[z]] = BLACK;
+                color[y] = BLACK;
+                color[parent[parent[z]]] = RED;
+                z = parent[parent[z]];
             } else {
-                if (z == z->parent->right) { // Case 2
-                    z = z->parent;
-                    leftRotate(tree, z);
+                if (z == right[parent[z]]) { // Case 2
+                    z = parent[z];
+                    left_rotate(z);
                 }
-                z->parent->color = BLACK; // Case 3
-                z->parent->parent->color = RED;
-                rightRotate(tree, z->parent->parent);
+                color[parent[z]] = BLACK; // Case 3
+                color[parent[parent[z]]] = RED;
+                right_rotate(parent[parent[z]]);
             }
         } else {
-            Node *y = z->parent->parent->left;
-            if (y->color == RED) { // Case 1
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
+            int y = left[parent[parent[z]]];
+            if (color[y] == RED) { // Case 1
+                color[parent[z]] = BLACK;
+                color[y] = BLACK;
+                color[parent[parent[z]]] = RED;
+                z = parent[parent[z]];
             } else {
-                if (z == z->parent->left) { // Case 2
-                    z = z->parent;
-                    rightRotate(tree, z);
+                if (z == left[parent[z]]) { // Case 2
+                    z = parent[z];
+                    right_rotate(z);
                 }
-                z->parent->color = BLACK; // Case 3
-                z->parent->parent->color = RED;
-                leftRotate(tree, z->parent->parent);
+                color[parent[z]] = BLACK; // Case 3
+                color[parent[parent[z]]] = RED;
+                left_rotate(parent[parent[z]]);
             }
         }
     }
-    tree->root->color = BLACK;
+    color[root] = BLACK;
 }
 
-// Insert a new node
-void insert(RBTree *tree, int key, int value) {
-    Node *z = createNode(tree, key, value);
-    Node *y = tree->nil;
-    Node *x = tree->root;
-    while (x != tree->nil) {
+// Insert a new key into the Red-Black Tree
+void insert(int k) {
+    int z = create_node(k);
+    int y = NIL;
+    int x = root;
+    while (x != NIL) {
         y = x;
-        if (z->key < x->key) {
-            x = x->left;
-        } else {
-            x = x->right;
-        }
+        if (k < key[x]) x = left[x];
+        else x = right[x];
     }
-    z->parent = y;
-    if (y == tree->nil) {
-        tree->root = z;
-    } else if (z->key < y->key) {
-        y->left = z;
-    } else {
-        y->right = z;
-    }
-    z->left = tree->nil;
-    z->right = tree->nil;
-    z->color = RED;
-    insertFixup(tree, z);
+    parent[z] = y;
+    if (y == NIL) root = z;
+    else if (k < key[y]) left[y] = z;
+    else right[y] = z;
+    color[z] = RED;
+    insert_fixup(z);
 }
 
-// Transplant nodes
-void transplant(RBTree *tree, Node *u, Node *v) {
-    if (u->parent == tree->nil) {
-        tree->root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    v->parent = u->parent;
+// Transplant subtrees during deletion
+void transplant(int u, int v) {
+    if (parent[u] == NIL) root = v;
+    else if (u == left[parent[u]]) left[parent[u]] = v;
+    else right[parent[u]] = v;
+    if (v != NIL) parent[v] = parent[u];
 }
 
 // Find the minimum node in a subtree
-Node* treeMinimum(RBTree *tree, Node *x) {
-    while (x->left != tree->nil) {
-        x = x->left;
-    }
+int tree_minimum(int x) {
+    while (left[x] != NIL) x = left[x];
     return x;
 }
 
-// Fix violations after deletion
-void deleteFixup(RBTree *tree, Node *x) {
-    while (x != tree->root && x->color == BLACK) {
-        if (x == x->parent->left) {
-            Node *w = x->parent->right;
-            if (w->color == RED) { // Case 1
-                w->color = BLACK;
-                x->parent->color = RED;
-                leftRotate(tree, x->parent);
-                w = x->parent->right;
+// Fix the Red-Black Tree after deletion
+void delete_fixup(int x) {
+    while (x != root && color[x] == BLACK) {
+        if (x == left[parent[x]]) {
+            int w = right[parent[x]];
+            if (color[w] == RED) { // Case 1
+                color[w] = BLACK;
+                color[parent[x]] = RED;
+                left_rotate(parent[x]);
+                w = right[parent[x]];
             }
-            if (w->left->color == BLACK && w->right->color == BLACK) { // Case 2
-                w->color = RED;
-                x = x->parent;
+            if (color[left[w]] == BLACK && color[right[w]] == BLACK) { // Case 2
+                color[w] = RED;
+                x = parent[x];
             } else {
-                if (w->right->color == BLACK) { // Case 3
-                    w->left->color = BLACK;
-                    w->color = RED;
-                    rightRotate(tree, w);
-                    w = x->parent->right;
+                if (color[right[w]] == BLACK) { // Case 3
+                    color[left[w]] = BLACK;
+                    color[w] = RED;
+                    right_rotate(w);
+                    w = right[parent[x]];
                 }
-                w->color = x->parent->color; // Case 4
-                x->parent->color = BLACK;
-                w->right->color = BLACK;
-                leftRotate(tree, x->parent);
-                x = tree->root;
+                color[w] = color[parent[x]]; // Case 4
+                color[parent[x]] = BLACK;
+                color[right[w]] = BLACK;
+                left_rotate(parent[x]);
+                x = root;
             }
         } else {
-            Node *w = x->parent->left;
-            if (w->color == RED) { // Case 1
-                w->color = BLACK;
-                x->parent->color = RED;
-                rightRotate(tree, x->parent);
-                w = x->parent->left;
+            int w = left[parent[x]];
+            if (color[w] == RED) { // Case 1
+                color[w] = BLACK;
+                color[parent[x]] = RED;
+                right_rotate(parent[x]);
+                w = left[parent[x]];
             }
-            if (w->right->color == BLACK && w->left->color == BLACK) { // Case 2
-                w->color = RED;
-                x = x->parent;
+            if (color[right[w]] == BLACK && color[left[w]] == BLACK) { // Case 2
+                color[w] = RED;
+                x = parent[x];
             } else {
-                if (w->left->color == BLACK) { // Case 3
-                    w->right->color = BLACK;
-                    w->color = RED;
-                    leftRotate(tree, w);
-                    w = x->parent->left;
+                if (color[left[w]] == BLACK) { // Case 3
+                    color[right[w]] = BLACK;
+                    color[w] = RED;
+                    left_rotate(w);
+                    w = left[parent[x]];
                 }
-                w->color = x->parent->color; // Case 4
-                x->parent->color = BLACK;
-                w->left->color = BLACK;
-                rightRotate(tree, x->parent);
-                x = tree->root;
+                color[w] = color[parent[x]]; // Case 4
+                color[parent[x]] = BLACK;
+                color[left[w]] = BLACK;
+                right_rotate(parent[x]);
+                x = root;
             }
         }
     }
-    x->color = BLACK;
+    color[x] = BLACK;
 }
 
-// Delete a node
-void deleteNode(RBTree *tree, Node *z) {
-    Node *y = z;
-    Node *x;
-    int yOriginalColor = y->color;
-    if (z->left == tree->nil) {
-        x = z->right;
-        transplant(tree, z, z->right);
-    } else if (z->right == tree->nil) {
-        x = z->left;
-        transplant(tree, z, z->left);
+// Delete a key from the Red-Black Tree
+void delete(int k) {
+    int z = root;
+    while (z != NIL && key[z] != k) {
+        if (k < key[z]) z = left[z];
+        else z = right[z];
+    }
+    if (z == NIL) return; // Key not found
+
+    int y = z;
+    int y_original_color = color[y];
+    int x;
+    if (left[z] == NIL) {
+        x = right[z];
+        transplant(z, right[z]);
+    } else if (right[z] == NIL) {
+        x = left[z];
+        transplant(z, left[z]);
     } else {
-        y = treeMinimum(tree, z->right);
-        yOriginalColor = y->color;
-        x = y->right;
-        if (y->parent == z) {
-            x->parent = y;
-        } else {
-            transplant(tree, y, y->right);
-            y->right = z->right;
-            y->right->parent = y;
+        y = tree_minimum(right[z]);
+        y_original_color = color[y];
+        x = right[y];
+        if (parent[y] == z) parent[x] = y;
+        else {
+            transplant(y, right[y]);
+            right[y] = right[z];
+            parent[right[y]] = y;
         }
-        transplant(tree, z, y);
-        y->left = z->left;
-        y->left->parent = y;
-        y->color = z->color;
+        transplant(z, y);
+        left[y] = left[z];
+        parent[left[y]] = y;
+        color[y] = color[z];
     }
-    if (yOriginalColor == BLACK) {
-        deleteFixup(tree, x);
-    }
-    free(z);
+    if (y_original_color == BLACK) delete_fixup(x);
 }
 
-// Search for a node with a given key
-Node* search(RBTree *tree, int key) {
-    Node *current = tree->root;
-    while (current != tree->nil && current->key != key) {
-        if (key < current->key) {
-            current = current->left;
-        } else {
-            current = current->right;
-        }
-    }
-    return current;
-}
-
-// Print tree (in-order traversal)
-void printTree(Node *node, Node *nil) {
-    if (node != nil) {
-        printTree(node->left, nil);
-        printf("Key: %d, Value: %d, Color: %s\n", node->key, node->value, node->color == RED ? "RED" : "BLACK");
-        printTree(node->right, nil);
+// In-order traversal for debugging
+void inorder(int x) {
+    if (x != NIL) {
+        inorder(left[x]);
+        printf("%d ", key[x]);
+        inorder(right[x]);
     }
 }
 
-// Main function for testing
 int main() {
-    RBTree *tree = createTree();
-
-    // Insertion
-    insert(tree, 10, 100);
-    insert(tree, 20, 200);
-    insert(tree, 30, 300);
-    insert(tree, 15, 150);
-    printf("Tree after insertion:\n");
-    printTree(tree->root, tree->nil);
-
-    // Deletion
-    Node *node = search(tree, 20);
-    if (node != tree->nil) {
-        deleteNode(tree, node);
+    for (int i = 0; i < MAX_NODES; i++) {
+        key[i] = NIL;
+        parent[i] = NIL;
+        left[i] = NIL;
+        right[i] = NIL;
+        color[i] = BLACK;
     }
-    printf("\nTree after deletion of key 20:\n");
-    printTree(tree->root, tree->nil);
+
+    insert(20);
+    insert(15);
+    insert(25);
+    insert(10);
+    insert(5);
+    insert(1);
+    delete(15);
+    delete(10);
+
+    printf("In-order traversal: ");
+    inorder(root);
+    printf("\n");
 
     return 0;
 }

@@ -1,144 +1,203 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-#define MAX_KEYS 3  // Maximum keys a node can hold (m-1 for order m)
-#define MIN_KEYS (MAX_KEYS / 2)  // Minimum keys a node must have
+#define MAX_KEYS 3  // Maximum keys per node (order of B+ tree - 1)
+#define MAX_CHILDREN (MAX_KEYS + 1)
 
-// Definition of a B+ tree node
-typedef struct BPTreeNode {
-    int keys[MAX_KEYS];               // Array of keys
-    struct BPTreeNode *children[MAX_KEYS + 1]; // Array of child pointers
-    int isLeaf;                       // Flag to indicate if the node is a leaf
-    int numKeys;                      // Current number of keys
-} BPTreeNode;
+// Global variables to simulate tree structure
+int tree[MAX_CHILDREN][MAX_KEYS + 1];  // Array for nodes: [child pointers, keys]
+int node_count = 1;                    // Tracks the number of nodes created
+int root = 0;                          // Root node index
 
-// Create a new B+ tree node
-BPTreeNode *createNode(int isLeaf) {
-    BPTreeNode *newNode = (BPTreeNode *)malloc(sizeof(BPTreeNode));
-    newNode->isLeaf = isLeaf;
-    newNode->numKeys = 0;
-    for (int i = 0; i <= MAX_KEYS; i++) {
-        newNode->children[i] = NULL;
-    }
-    return newNode;
-}
+// Function declarations
+void initialize_tree();
+void insert(int key);
+void delete (int key);
+void search(int key);
+void split(int node, int parent);
+void merge(int node, int parent);
+void print_tree();
 
-// Find the correct child to traverse during insertion or search
-int findChildIndex(BPTreeNode *node, int key) {
-    int index = 0;
-    while (index < node->numKeys && key > node->keys[index]) {
-        index++;
-    }
-    return index;
-}
-
-// Split a full child node during insertion
-void splitChild(BPTreeNode *parent, int childIndex, BPTreeNode *child) {
-    int midIndex = MAX_KEYS / 2;
-
-    // Create a new node to store the second half of the keys
-    BPTreeNode *newChild = createNode(child->isLeaf);
-    newChild->numKeys = MAX_KEYS - midIndex - 1;
-
-    // Copy the keys and children to the new node
-    for (int i = 0; i < newChild->numKeys; i++) {
-        newChild->keys[i] = child->keys[midIndex + 1 + i];
-    }
-    if (!child->isLeaf) {
-        for (int i = 0; i <= newChild->numKeys; i++) {
-            newChild->children[i] = child->children[midIndex + 1 + i];
+// Initialize the tree
+void initialize_tree() {
+    for (int i = 0; i < MAX_CHILDREN; i++) {
+        for (int j = 0; j <= MAX_KEYS; j++) {
+            tree[i][j] = -1;  // Initialize tree to empty
         }
     }
-    child->numKeys = midIndex;
-
-    // Adjust the parent's keys and children
-    for (int i = parent->numKeys; i > childIndex; i--) {
-        parent->children[i + 1] = parent->children[i];
-        parent->keys[i] = parent->keys[i - 1];
-    }
-    parent->children[childIndex + 1] = newChild;
-    parent->keys[childIndex] = child->keys[midIndex];
-    parent->numKeys++;
+    root = 0;
 }
 
+// Insert a key into the B+ tree
+void insert(int key) {
+    int current = root;
+    int parent = -1;
 
-// Insert a key into a non-full node
-void insertNonFull(BPTreeNode *node, int key) {
-    int i = node->numKeys - 1;
-
-    if (node->isLeaf) {
-        // Insert the key into the correct position in the leaf node
-        while (i >= 0 && key < node->keys[i]) {
-            node->keys[i + 1] = node->keys[i];
-            i--;
+    while (true) {
+        // Find position to insert key in the current node
+        int pos = 0;
+        while (pos < MAX_KEYS && tree[current][pos] != -1 && tree[current][pos] < key) {
+            pos++;
         }
-        node->keys[i + 1] = key;
-        node->numKeys++;
-    } else {
-        // Find the child that will contain the new key
-        int childIndex = findChildIndex(node, key);
-        BPTreeNode *child = node->children[childIndex];
 
-        // Split the child if it is full
-        if (child->numKeys == MAX_KEYS) {
-            splitChild(node, childIndex, child);
+        if (tree[current][MAX_KEYS] == -1) {  // Leaf node
+            for (int i = MAX_KEYS - 1; i >= pos; i--) {
+                tree[current][i + 1] = tree[current][i];  // Shift keys to make room
+            }
+            tree[current][pos] = key;
+            break;
+        } else {  // Internal node
+            parent = current;
+            current = tree[current][pos];  // Move to the next child
+        }
+    }
 
-            // Determine the correct child to proceed
-            if (key > node->keys[childIndex]) {
-                childIndex++;
+    // Handle split if node is full
+    if (tree[current][MAX_KEYS] != -1) {
+        split(current, parent);
+    }
+}
+
+// Split a node when it becomes full
+void split(int node, int parent) {
+    int mid = MAX_KEYS / 2;
+    int new_node = node_count++;
+
+    // Move the second half of keys to the new node
+    for (int i = mid + 1; i < MAX_KEYS; i++) {
+        tree[new_node][i - mid - 1] = tree[node][i];
+        tree[node][i] = -1;
+    }
+
+    // Handle child pointers if internal node
+    if (tree[node][MAX_KEYS] != -1) {
+        tree[new_node][MAX_KEYS] = tree[node][MAX_KEYS];
+        tree[node][MAX_KEYS] = -1;
+    }
+
+    // Insert the middle key into the parent
+    if (parent == -1) {
+        // Create a new root
+        parent = node_count++;
+        root = parent;
+        tree[parent][0] = node;
+    }
+
+    int pos = 0;
+    while (pos < MAX_KEYS && tree[parent][pos] != -1 && tree[parent][pos] < tree[node][mid]) {
+        pos++;
+    }
+
+    for (int i = MAX_KEYS - 1; i >= pos; i--) {
+        tree[parent][i + 1] = tree[parent][i];
+        tree[parent][i + 1 + MAX_KEYS] = tree[parent][i + MAX_KEYS];
+    }
+
+    tree[parent][pos] = tree[node][mid];
+    tree[node][mid] = -1;
+    tree[parent][pos + MAX_KEYS] = new_node;
+}
+
+// Delete a key from the B+ tree
+void delete (int key) {
+    int current = root;
+    int parent = -1;
+
+    while (current != -1) {
+        int pos = 0;
+        while (pos < MAX_KEYS && tree[current][pos] != -1 && tree[current][pos] < key) {
+            pos++;
+        }
+
+        if (tree[current][pos] == key) {
+            // Key found, remove it
+            for (int i = pos; i < MAX_KEYS - 1; i++) {
+                tree[current][i] = tree[current][i + 1];
+            }
+            tree[current][MAX_KEYS - 1] = -1;
+
+            // Handle underflow
+            if (tree[current][0] == -1 && parent != -1) {
+                merge(current, parent);
+            }
+            return;
+        } else if (tree[current][MAX_KEYS] != -1) {
+            parent = current;
+            current = tree[current][pos];
+        } else {
+            break;
+        }
+    }
+
+    printf("Key %d not found.\n", key);
+}
+
+// Merge nodes to handle underflow
+void merge(int node, int parent) {
+    // TODO: Implement merge logic for underflow
+}
+
+// Search for a key in the B+ tree
+void search(int key) {
+    int current = root;
+
+    while (current != -1) {
+        int found = 0;
+        for (int i = 0; i < MAX_KEYS; i++) {
+            if (tree[current][i] == key) {
+                printf("Key %d found in node %d at position %d\n", key, current, i);
+                return;
+            } else if (tree[current][i] > key || tree[current][i] == -1) {
+                found = 1;
+                current = tree[current][i + MAX_KEYS];
+                break;
             }
         }
-        insertNonFull(node->children[childIndex], key);
-    }
-}
-// Insert a key into the B+ tree
-void insert(BPTreeNode **root, int key) {
-    BPTreeNode *rootNode = *root;
 
-    // If the root is full, split it
-    if (rootNode->numKeys == MAX_KEYS) {
-        BPTreeNode *newRoot = createNode(0);
-        newRoot->children[0] = rootNode;
-
-        splitChild(newRoot, 0, rootNode);
-
-        int childIndex = (key > newRoot->keys[0]) ? 1 : 0;
-        insertNonFull(newRoot->children[childIndex], key);
-
-        *root = newRoot;
-    } else {
-        insertNonFull(rootNode, key);
-    }
-}
-
-// Display the B+ tree structure
-void display(BPTreeNode *node, int level) {
-    if (node) {
-        printf("Level %d [", level);
-        for (int i = 0; i < node->numKeys; i++) {
-            printf(" %d", node->keys[i]);
-        }
-        printf(" ]\n");
-
-        for (int i = 0; i <= node->numKeys; i++) {
-            display(node->children[i], level + 1);
+        if (!found) {
+            break;
         }
     }
+
+    printf("Key %d not found.\n", key);
 }
 
-// Main function to test the B+ tree
+// Print the B+ tree
+void print_tree() {
+    for (int i = 0; i < node_count; i++) {
+        printf("Node %d: ", i);
+        for (int j = 0; j < MAX_KEYS; j++) {
+            if (tree[i][j] != -1) {
+                printf("%d ", tree[i][j]);
+            }
+        }
+        printf("| Children: ");
+        for (int j = 0; j < MAX_KEYS; j++) {
+            if (tree[i][j + MAX_KEYS] != -1) {
+                printf("%d ", tree[i][j + MAX_KEYS]);
+            }
+        }
+        printf("\n");
+    }
+}
+
 int main() {
-    BPTreeNode *root = createNode(1);
+    initialize_tree();
 
-    int keys[] = {10, 20, 5, 6, 12, 30, 7, 17};
-    int n = sizeof(keys) / sizeof(keys[0]);
+    insert(10);
+    insert(20);
+    insert(30);
+    insert(40);
+    insert(50);
 
-    for (int i = 0; i < n; i++) {
-        insert(&root, keys[i]);
-    }
+    print_tree();
 
-    printf("B+ Tree structure:\n");
-    display(root, 0);
+    search(20);
+    search(25);
+
+    delete (20);
+    print_tree();
 
     return 0;
 }

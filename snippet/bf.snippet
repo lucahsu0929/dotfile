@@ -1,70 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+#include <math.h>
 
-#define BLOOM_FILTER_SIZE 256  // 位陣列的大小
-#define NUM_HASHES 2           // 使用的哈希函數數量
+#define BIT_ARRAY_SIZE 1000 // Size of the bit array
+#define NUM_HASH_FUNCTIONS 3 // Number of hash functions
 
-typedef struct {
-    uint8_t bits[BLOOM_FILTER_SIZE / 8];
-} BloomFilter;
+// Global bit array
+unsigned char bit_array[BIT_ARRAY_SIZE];
 
-void set_bit(BloomFilter *filter, uint32_t index) {
-    filter->bits[index / 8] |= (1 << (index % 8));
-}
-
-int check_bit(const BloomFilter *filter, uint32_t index) {
-    return (filter->bits[index / 8] & (1 << (index % 8))) != 0;
-}
-
-uint32_t hash1(const char *key) {
-    uint32_t hash = 0;
-    while (*key) {
-        hash = (hash * 31) + *key++;
+// Simple hash functions
+unsigned int hash1(const char *str) {
+    unsigned int hash = 0;
+    while (*str) {
+        hash = (hash * 31) + *str++;
     }
-    return hash % BLOOM_FILTER_SIZE;
+    return hash % BIT_ARRAY_SIZE;
 }
 
-uint32_t hash2(const char *key) {
-    uint32_t hash = 0;
-    while (*key) {
-        hash = (hash * 17) + *key++;
+unsigned int hash2(const char *str) {
+    unsigned int hash = 5381;
+    while (*str) {
+        hash = ((hash << 5) + hash) + *str++; // hash * 33 + c
     }
-    return hash % BLOOM_FILTER_SIZE;
+    return hash % BIT_ARRAY_SIZE;
 }
 
-void init_bloom_filter(BloomFilter *filter) {
-    memset(filter->bits, 0, sizeof(filter->bits));
+unsigned int hash3(const char *str) {
+    unsigned int hash = 0;
+    int i = 0;
+    while (*str) {
+        hash += (*str++) * (i + 1);
+        i++;
+    }
+    return hash % BIT_ARRAY_SIZE;
 }
 
-void insert_bloom_filter(BloomFilter *filter, const char *key) {
-    set_bit(filter, hash1(key));
-    set_bit(filter, hash2(key));
+// Initialize the bit array
+void initialize() {
+    memset(bit_array, 0, sizeof(bit_array));
 }
 
-int might_contain_bloom_filter(const BloomFilter *filter, const char *key) {
-    return check_bit(filter, hash1(key)) && check_bit(filter, hash2(key));
+// Add an element to the Bloom filter
+void add(const char *str) {
+    unsigned int h1 = hash1(str);
+    unsigned int h2 = hash2(str);
+    unsigned int h3 = hash3(str);
+
+    bit_array[h1] = 1;
+    bit_array[h2] = 1;
+    bit_array[h3] = 1;
 }
 
+// Check if an element is possibly in the Bloom filter
+int contains(const char *str) {
+    unsigned int h1 = hash1(str);
+    unsigned int h2 = hash2(str);
+    unsigned int h3 = hash3(str);
+
+    return bit_array[h1] && bit_array[h2] && bit_array[h3];
+}
+
+// Main function to demonstrate the Bloom filter
 int main() {
-    BloomFilter filter;
-    init_bloom_filter(&filter);
+    initialize();
 
-    // insert
-    const char *keys_to_insert[] = {"apple", "banana", "cherry"};
-    for (int i = 0; i < 3; i++) {
-        insert_bloom_filter(&filter, keys_to_insert[i]);
+    add("hello");
+    add("world");
+
+    if (contains("hello")) {
+        printf("'hello' is possibly in the Bloom filter.\n");
+    } else {
+        printf("'hello' is NOT in the Bloom filter.\n");
     }
 
-    // check exist
-    const char *keys_to_check[] = {"apple", "banana", "cherry", "date", "fig"};
-    for (int i = 0; i < 5; i++) {
-        printf("'%s' is %sin the Bloom Filter.\n",
-               keys_to_check[i],
-               might_contain_bloom_filter(&filter, keys_to_check[i]) ? "" : "not ");
+    if (contains("world")) {
+        printf("'world' is possibly in the Bloom filter.\n");
+    } else {
+        printf("'world' is NOT in the Bloom filter.\n");
+    }
+
+    if (contains("test")) {
+        printf("'test' is possibly in the Bloom filter.\n");
+    } else {
+        printf("'test' is NOT in the Bloom filter.\n");
     }
 
     return 0;
 }
-

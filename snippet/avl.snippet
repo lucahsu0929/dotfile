@@ -1,223 +1,214 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
-// Define the structure for an AVL tree node
-typedef struct AVLNode {
-    int key;
-    int value;
-    struct AVLNode* left;
-    struct AVLNode* right;
-    int height;
-} AVLNode;
+#define MAX_NODES 1000 // Maximum number of nodes in the tree
 
-// Function to get the height of a node
-int height(AVLNode* node) {
-    if (node == NULL) return 0;
-    return node->height;
+// Array representation of the AVL tree
+int tree[MAX_NODES];      // Stores keys
+int left[MAX_NODES];      // Stores left child indices
+int right[MAX_NODES];     // Stores right child indices
+int height[MAX_NODES];    // Stores height of each node
+int root = -1;            // Root index
+int next_free = 0;        // Next available index
+
+// Initialize the tree
+void init_tree() {
+    for (int i = 0; i < MAX_NODES; i++) {
+        tree[i] = INT_MIN;
+        left[i] = -1;
+        right[i] = -1;
+        height[i] = 0;
+    }
 }
 
-// Function to get the balance factor of a node
-int getBalance(AVLNode* node) {
-    if (node == NULL) return 0;
-    return height(node->left) - height(node->right);
+// Utility function to get the height of a node
+int get_height(int index) {
+    return (index == -1) ? 0 : height[index];
 }
 
-// Function to perform a right rotation
-AVLNode* rightRotate(AVLNode* y) {
-    AVLNode* x = y->left;
-    AVLNode* T2 = x->right;
+// Utility function to calculate the balance factor of a node
+int get_balance(int index) {
+    if (index == -1) return 0;
+    return get_height(left[index]) - get_height(right[index]);
+}
+
+// Right rotation
+int rotate_right(int y) {
+    int x = left[y];
+    int T = right[x];
 
     // Perform rotation
-    x->right = y;
-    y->left = T2;
+    right[x] = y;
+    left[y] = T;
 
     // Update heights
-    y->height = 1 + (height(y->left) > height(y->right) ? height(y->left) : height(y->right));
-    x->height = 1 + (height(x->left) > height(x->right) ? height(x->left) : height(x->right));
+    height[y] = 1 + ((get_height(left[y]) > get_height(right[y])) ? get_height(left[y]) : get_height(right[y]));
+    height[x] = 1 + ((get_height(left[x]) > get_height(right[x])) ? get_height(left[x]) : get_height(right[x]));
 
-    // Return new root
-    return x;
+    return x; // New root
 }
 
-// Function to perform a left rotation
-AVLNode* leftRotate(AVLNode* x) {
-    AVLNode* y = x->right;
-    AVLNode* T2 = y->left;
+// Left rotation
+int rotate_left(int x) {
+    int y = right[x];
+    int T = left[y];
 
     // Perform rotation
-    y->left = x;
-    x->right = T2;
+    left[y] = x;
+    right[x] = T;
 
     // Update heights
-    x->height = 1 + (height(x->left) > height(x->right) ? height(x->left) : height(x->right));
-    y->height = 1 + (height(y->left) > height(y->right) ? height(y->left) : height(y->right));
+    height[x] = 1 + ((get_height(left[x]) > get_height(right[x])) ? get_height(left[x]) : get_height(right[x]));
+    height[y] = 1 + ((get_height(left[y]) > get_height(right[y])) ? get_height(left[y]) : get_height(right[y]));
 
-    // Return new root
-    return y;
+    return y; // New root
 }
 
-// Function to insert a new key-value pair into the AVL tree
-AVLNode* insert(AVLNode* node, int key, int value) {
-    // 1. Perform the normal BST insert
-    if (node == NULL) {
-        AVLNode* newNode = (AVLNode*)malloc(sizeof(AVLNode));
-        newNode->key = key;
-        newNode->value = value;
-        newNode->left = newNode->right = NULL;
-        newNode->height = 1;
-        return newNode;
+// Insert a key into the AVL tree
+int insert(int index, int key) {
+    if (index == -1) {
+        int new_node = next_free++;
+        tree[new_node] = key;
+        left[new_node] = -1;
+        right[new_node] = -1;
+        height[new_node] = 1;
+        return new_node;
     }
 
-    if (key < node->key) {
-        node->left = insert(node->left, key, value);
-    } else if (key > node->key) {
-        node->right = insert(node->right, key, value);
+    if (key < tree[index]) {
+        left[index] = insert(left[index], key);
+    } else if (key > tree[index]) {
+        right[index] = insert(right[index], key);
     } else {
-        // Duplicate keys are not allowed, so we update the value
-        node->value = value;
-        return node;
+        return index; // No duplicate keys allowed
     }
 
-    // 2. Update the height of the ancestor node
-    node->height = 1 + (height(node->left) > height(node->right) ? height(node->left) : height(node->right));
+    // Update height
+    height[index] = 1 + ((get_height(left[index]) > get_height(right[index])) ? get_height(left[index]) : get_height(right[index]));
 
-    // 3. Get the balance factor of the node to check whether it became unbalanced
-    int balance = getBalance(node);
-
-    // If the node becomes unbalanced, then there are 4 cases
+    // Balance the tree
+    int balance = get_balance(index);
 
     // Left Left Case
-    if (balance > 1 && key < node->left->key) {
-        return rightRotate(node);
+    if (balance > 1 && key < tree[left[index]]) {
+        return rotate_right(index);
     }
 
     // Right Right Case
-    if (balance < -1 && key > node->right->key) {
-        return leftRotate(node);
+    if (balance < -1 && key > tree[right[index]]) {
+        return rotate_left(index);
     }
 
     // Left Right Case
-    if (balance > 1 && key > node->left->key) {
-        node->left = leftRotate(node->left);
-        return rightRotate(node);
+    if (balance > 1 && key > tree[left[index]]) {
+        left[index] = rotate_left(left[index]);
+        return rotate_right(index);
     }
 
     // Right Left Case
-    if (balance < -1 && key < node->right->key) {
-        node->right = rightRotate(node->right);
-        return leftRotate(node);
+    if (balance < -1 && key < tree[right[index]]) {
+        right[index] = rotate_right(right[index]);
+        return rotate_left(index);
     }
 
-    return node;
+    return index;
 }
 
-// Function to get the node with the minimum key value
-AVLNode* minValueNode(AVLNode* node) {
-    AVLNode* current = node;
-    while (current->left != NULL) {
-        current = current->left;
+// Find the node with the minimum key
+int find_min(int index) {
+    while (left[index] != -1) {
+        index = left[index];
     }
-    return current;
+    return index;
 }
 
-// Function to delete a key-value pair from the AVL tree
-AVLNode* deleteNode(AVLNode* root, int key) {
-    // Step 1: Perform normal BST delete
-    if (root == NULL) return root;
+// Delete a key from the AVL tree
+int delete(int index, int key) {
+    if (index == -1) return index;
 
-    // If the key to be deleted is smaller than the root's key, then it lies in the left subtree
-    if (key < root->key) {
-        root->left = deleteNode(root->left, key);
-    }
-    // If the key to be deleted is larger than the root's key, then it lies in the right subtree
-    else if (key > root->key) {
-        root->right = deleteNode(root->right, key);
-    }
-    // If key is the same as root's key, then this is the node to be deleted
-    else {
-        // Node with only one child or no child
-        if (root->left == NULL) {
-            AVLNode* temp = root->right;
-            free(root);
-            return temp;
+    if (key < tree[index]) {
+        left[index] = delete(left[index], key);
+    } else if (key > tree[index]) {
+        right[index] = delete(right[index], key);
+    } else {
+        if (left[index] == -1 || right[index] == -1) {
+            int temp = (left[index] != -1) ? left[index] : right[index];
+            if (temp == -1) {
+                index = -1;
+            } else {
+                tree[index] = tree[temp];
+                left[index] = left[temp];
+                right[index] = right[temp];
+                height[index] = height[temp];
+            }
+        } else {
+            int temp = find_min(right[index]);
+            tree[index] = tree[temp];
+            right[index] = delete(right[index], tree[temp]);
         }
-        else if (root->right == NULL) {
-            AVLNode* temp = root->left;
-            free(root);
-            return temp;
-        }
-
-        // Node with two children: Get the inorder successor (smallest in the right subtree)
-        AVLNode* temp = minValueNode(root->right);
-
-        // Copy the inorder successor's content to this node
-        root->key = temp->key;
-        root->value = temp->value;
-
-        // Delete the inorder successor
-        root->right = deleteNode(root->right, temp->key);
     }
 
-    // Step 2: Update height of this ancestor node
-    root->height = 1 + (height(root->left) > height(root->right) ? height(root->left) : height(root->right));
+    if (index == -1) return index;
 
-    // Step 3: Get the balance factor to check whether this node became unbalanced
-    int balance = getBalance(root);
+    // Update height
+    height[index] = 1 + ((get_height(left[index]) > get_height(right[index])) ? get_height(left[index]) : get_height(right[index]));
 
-    // If this node becomes unbalanced, then there are 4 cases
+    // Balance the tree
+    int balance = get_balance(index);
 
     // Left Left Case
-    if (balance > 1 && getBalance(root->left) >= 0) {
-        return rightRotate(root);
+    if (balance > 1 && get_balance(left[index]) >= 0) {
+        return rotate_right(index);
+    }
+
+    // Left Right Case
+    if (balance > 1 && get_balance(left[index]) < 0) {
+        left[index] = rotate_left(left[index]);
+        return rotate_right(index);
     }
 
     // Right Right Case
-    if (balance < -1 && getBalance(root->right) <= 0) {
-        return leftRotate(root);
-    }
-
-    // Left Right Case
-    if (balance > 1 && getBalance(root->left) < 0) {
-        root->left = leftRotate(root->left);
-        return rightRotate(root);
+    if (balance < -1 && get_balance(right[index]) <= 0) {
+        return rotate_left(index);
     }
 
     // Right Left Case
-    if (balance < -1 && getBalance(root->right) > 0) {
-        root->right = rightRotate(root->right);
-        return leftRotate(root);
+    if (balance < -1 && get_balance(right[index]) > 0) {
+        right[index] = rotate_right(right[index]);
+        return rotate_left(index);
     }
 
-    return root;
+    return index;
 }
 
-// Function to print the inorder traversal of the AVL tree
-void inorder(AVLNode* root) {
-    if (root != NULL) {
-        inorder(root->left);
-        printf("Key: %d, Value: %d\n", root->key, root->value);
-        inorder(root->right);
-    }
+// Inorder traversal
+void inorder(int index) {
+    if (index == -1) return;
+    inorder(left[index]);
+    printf("%d ", tree[index]);
+    inorder(right[index]);
 }
 
-// Driver function to test the AVL tree
 int main() {
-    AVLNode* root = NULL;
+    init_tree();
 
-    // Insert key-value pairs
-    root = insert(root, 10, 100);
-    root = insert(root, 20, 200);
-    root = insert(root, 5, 50);
-    root = insert(root, 6, 60);
-    root = insert(root, 30, 300);
+    root = insert(root, 10);
+    root = insert(root, 20);
+    root = insert(root, 30);
+    root = insert(root, 40);
+    root = insert(root, 50);
+    root = insert(root, 25);
 
-    printf("Inorder traversal of the AVL tree:\n");
+    printf("Inorder traversal: ");
     inorder(root);
+    printf("\n");
 
-    // Delete a node
-    root = deleteNode(root, 20);
-    printf("\nInorder traversal after deleting key 20:\n");
+    root = delete(root, 30);
+
+    printf("Inorder traversal after deletion: ");
     inorder(root);
+    printf("\n");
 
     return 0;
 }

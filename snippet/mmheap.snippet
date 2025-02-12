@@ -1,168 +1,206 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
-typedef struct {
-    int key;
-    int value;
-} MinMaxHeapNode;
+#define MAX_SIZE 100 // Maximum size of the tree
 
-typedef struct {
-    MinMaxHeapNode *nodes;
-    int size;
-    int capacity;
-} MinMaxHeap;
+int tree[MAX_SIZE]; // Array representation of the Min-Max Tree
+int size = 0;       // Current number of elements in the tree
 
-MinMaxHeap* createMinMaxHeap(int capacity) {
-    MinMaxHeap *heap = (MinMaxHeap*)malloc(sizeof(MinMaxHeap));
-    heap->capacity = capacity;
-    heap->size = 0;
-    heap->nodes = (MinMaxHeapNode*)malloc(sizeof(MinMaxHeapNode) * capacity);
-    return heap;
+// Function prototypes
+int parent(int i);
+int leftChild(int i);
+int rightChild(int i);
+void swap(int *a, int *b);
+int isMinLevel(int index);
+void bubbleUp(int index);
+void bubbleUpMin(int index);
+void bubbleUpMax(int index);
+void insert(int key);
+void bubbleDown(int index);
+int deleteMin();
+int deleteMax();
+void display();
+
+// Function implementations
+int parent(int i) {
+    return (i - 1) / 2;
 }
 
-void swap(MinMaxHeapNode *a, MinMaxHeapNode *b) {
-    MinMaxHeapNode temp = *a;
+int leftChild(int i) {
+    return 2 * i + 1;
+}
+
+int rightChild(int i) {
+    return 2 * i + 2;
+}
+
+void swap(int *a, int *b) {
+    int temp = *a;
     *a = *b;
     *b = temp;
 }
 
-int getParentIndex(int index) {
-    return (index - 1) / 2;
-}
-
-int getLeftChildIndex(int index) {
-    return 2 * index + 1;
-}
-
-int getRightChildIndex(int index) {
-    return 2 * index + 2;
-}
-
 int isMinLevel(int index) {
-    return (index % 2 == 0);
+    int level = 0;
+    while (index > 0) {
+        index = parent(index);
+        level++;
+    }
+    return level % 2 == 0;
 }
 
-void heapifyMin(MinMaxHeap *heap, int index) {
-    int smallest = index;
-    int left = getLeftChildIndex(index);
-    int right = getRightChildIndex(index);
-
-    if (left < heap->size && heap->nodes[left].key < heap->nodes[smallest].key)
-        smallest = left;
-
-    if (right < heap->size && heap->nodes[right].key < heap->nodes[smallest].key)
-        smallest = right;
-
-    if (smallest != index) {
-        swap(&heap->nodes[index], &heap->nodes[smallest]);
-        heapifyMin(heap, smallest);
+void bubbleUpMin(int index) {
+    if (index <= 2) return;
+    int grandparentIdx = parent(parent(index));
+    if (tree[index] < tree[grandparentIdx]) {
+        swap(&tree[index], &tree[grandparentIdx]);
+        bubbleUpMin(grandparentIdx);
     }
 }
 
-void heapifyMax(MinMaxHeap *heap, int index) {
-    int largest = index;
-    int left = getLeftChildIndex(index);
-    int right = getRightChildIndex(index);
-
-    if (left < heap->size && heap->nodes[left].key > heap->nodes[largest].key)
-        largest = left;
-
-    if (right < heap->size && heap->nodes[right].key > heap->nodes[largest].key)
-        largest = right;
-
-    if (largest != index) {
-        swap(&heap->nodes[index], &heap->nodes[largest]);
-        heapifyMax(heap, largest);
+void bubbleUpMax(int index) {
+    if (index <= 2) return;
+    int grandparentIdx = parent(parent(index));
+    if (tree[index] > tree[grandparentIdx]) {
+        swap(&tree[index], &tree[grandparentIdx]);
+        bubbleUpMax(grandparentIdx);
     }
 }
 
-void insert(MinMaxHeap *heap, int key, int value) {
-    if (heap->size == heap->capacity) {
-        printf("Heap is full.\n");
+void bubbleUp(int index) {
+    if (index == 0) return;
+
+    int parentIdx = parent(index);
+
+    if (isMinLevel(index)) {
+        if (tree[index] > tree[parentIdx]) {
+            swap(&tree[index], &tree[parentIdx]);
+            bubbleUpMax(parentIdx);
+        } else {
+            bubbleUpMin(index);
+        }
+    } else {
+        if (tree[index] < tree[parentIdx]) {
+            swap(&tree[index], &tree[parentIdx]);
+            bubbleUpMin(parentIdx);
+        } else {
+            bubbleUpMax(index);
+        }
+    }
+}
+
+void insert(int key) {
+    if (size >= MAX_SIZE) {
+        printf("Error: Tree is full.\n");
         return;
     }
 
-    MinMaxHeapNode newNode = {key, value};
-    heap->nodes[heap->size] = newNode;
-    int index = heap->size;
-    heap->size++;
+    tree[size] = key;
+    size++;
+    bubbleUp(size - 1);
+}
 
-    while (index != 0 && heap->nodes[getParentIndex(index)].key > heap->nodes[index].key) {
-        swap(&heap->nodes[index], &heap->nodes[getParentIndex(index)]);
-        index = getParentIndex(index);
+void bubbleDown(int index) {
+    int left = leftChild(index);
+    int right = rightChild(index);
+
+    if (left >= size) return; // No children
+
+    if (isMinLevel(index)) {
+        int smallest = index;
+
+        // Find the smallest among index, children, and grandchildren
+        if (tree[left] < tree[smallest]) smallest = left;
+        if (right < size && tree[right] < tree[smallest]) smallest = right;
+
+        if (smallest != index) {
+            swap(&tree[index], &tree[smallest]);
+
+            if (smallest == left || smallest == right) {
+                bubbleDown(smallest);
+            } else {
+                int childIdx = parent(smallest);
+                if (tree[smallest] > tree[childIdx]) {
+                    swap(&tree[smallest], &tree[childIdx]);
+                }
+                bubbleDown(smallest);
+            }
+        }
+    } else {
+        int largest = index;
+
+        // Find the largest among index, children, and grandchildren
+        if (tree[left] > tree[largest]) largest = left;
+        if (right < size && tree[right] > tree[largest]) largest = right;
+
+        if (largest != index) {
+            swap(&tree[index], &tree[largest]);
+
+            if (largest == left || largest == right) {
+                bubbleDown(largest);
+            } else {
+                int childIdx = parent(largest);
+                if (tree[largest] < tree[childIdx]) {
+                    swap(&tree[largest], &tree[childIdx]);
+                }
+                bubbleDown(largest);
+            }
+        }
     }
 }
 
-MinMaxHeapNode extractMin(MinMaxHeap *heap) {
-    if (heap->size <= 0) {
-        printf("Heap is empty.\n");
-        MinMaxHeapNode nullNode = {-1, -1};
-        return nullNode;
+int deleteMin() {
+    if (size == 0) {
+        printf("Error: Tree is empty.\n");
+        return INT_MIN;
     }
 
-    if (heap->size == 1) {
-        heap->size--;
-        return heap->nodes[0];
-    }
-
-    MinMaxHeapNode root = heap->nodes[0];
-    heap->nodes[0] = heap->nodes[heap->size - 1];
-    heap->size--;
-
-    heapifyMin(heap, 0);
-
-    return root;
+    int min = tree[0];
+    tree[0] = tree[size - 1];
+    size--;
+    bubbleDown(0);
+    return min;
 }
 
-MinMaxHeapNode extractMax(MinMaxHeap *heap) {
-    if (heap->size <= 0) {
-        printf("Heap is empty.\n");
-        MinMaxHeapNode nullNode = {-1, -1};
-        return nullNode;
+int deleteMax() {
+    if (size == 0) {
+        printf("Error: Tree is empty.\n");
+        return INT_MIN;
     }
 
-    if (heap->size == 1) {
-        heap->size--;
-        return heap->nodes[0];
-    }
-
-    MinMaxHeapNode root = heap->nodes[0];
-    heap->nodes[0] = heap->nodes[heap->size - 1];
-    heap->size--;
-
-    heapifyMax(heap, 0);
-
-    return root;
+    int maxIndex = (size == 1 || tree[1] > tree[2]) ? 1 : 2;
+    int max = tree[maxIndex];
+    tree[maxIndex] = tree[size - 1];
+    size--;
+    bubbleDown(maxIndex);
+    return max;
 }
 
-void printHeap(MinMaxHeap *heap) {
-    for (int i = 0; i < heap->size; i++) {
-        printf("Key: %d, Value: %d\n", heap->nodes[i].key, heap->nodes[i].value);
+void display() {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", tree[i]);
     }
+    printf("\n");
 }
 
 int main() {
-    MinMaxHeap *heap = createMinMaxHeap(10);
+    insert(10);
+    insert(20);
+    insert(5);
+    insert(30);
+    insert(15);
 
-    insert(heap, 3, 100);
-    insert(heap, 1, 50);
-    insert(heap, 2, 75);
-    insert(heap, 6, 200);
+    printf("Tree after insertions: ");
+    display();
 
-    printf("Heap contents:\n");
-    printHeap(heap);
+    printf("Deleted Min: %d\n", deleteMin());
+    printf("Tree after deleting Min: ");
+    display();
 
-    MinMaxHeapNode minNode = extractMin(heap);
-    printf("\nExtracted Min: Key: %d, Value: %d\n", minNode.key, minNode.value);
-
-    MinMaxHeapNode maxNode = extractMax(heap);
-    printf("\nExtracted Max: Key: %d, Value: %d\n", maxNode.key, maxNode.value);
-
-    printf("\nHeap after extraction:\n");
-    printHeap(heap);
-
-    free(heap->nodes);
-    free(heap);
+    printf("Deleted Max: %d\n", deleteMax());
+    printf("Tree after deleting Max: ");
+    display();
 
     return 0;
 }

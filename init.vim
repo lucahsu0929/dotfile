@@ -72,14 +72,14 @@ highlight NonText ctermbg=none guibg=none
 highlight SignColumn ctermbg=none guibg=none
 
 
-nnoremap hash<tab> :-1read $HOME/.config/nvim/snippet/hash.snippet<cr>G
-nnoremap fheap<tab> :-1read $HOME/.config/nvim/snippet/fheap.snippet<cr>G
-nnoremap bheap<tab> :-1read $HOME/.config/nvim/snippet/bheap.snippet<cr>G
-nnoremap bf<tab> :-1read $HOME/.config/nvim/snippet/bf.snippet<cr>G
-nnoremap avl<tab> :-1read $HOME/.config/nvim/snippet/avl.snippet<cr>G
-nnoremap mmheap<tab> :-1read $HOME/.config/nvim/snippet/mmheap.snippet<cr>G
-nnoremap bminus<tab> :-1read $HOME/.config/nvim/snippet/bminus.snippet<cr>G
-nnoremap red<tab> :-1read $HOME/.config/nvim/snippet/red.snippet<cr>G
-nnoremap bplus<tab> :-1read $HOME/.config/nvim/snippet/bplus.snippet<cr>G
-nnoremap trie<tab> :-1read $HOME/.config/nvim/snippet/trie.snippet<cr>G
-nnoremap patricia<tab> :-1read $HOME/.config/nvim/snippet/patricia.snippet<cr>G
+" nnoremap hash<tab> :-1read $HOME/.config/nvim/snippet/hash.snippet<cr>G
+" nnoremap fheap<tab> :-1read $HOME/.config/nvim/snippet/fheap.snippet<cr>G
+" nnoremap bheap<tab> :-1read $HOME/.config/nvim/snippet/bheap.snippet<cr>G
+" nnoremap bf<tab> :-1read $HOME/.config/nvim/snippet/bf.snippet<cr>G
+" nnoremap avl<tab> :-1read $HOME/.config/nvim/snippet/avl.snippet<cr>G
+" nnoremap mmheap<tab> :-1read $HOME/.config/nvim/snippet/mmheap.snippet<cr>G
+" nnoremap bminus<tab> :-1read $HOME/.config/nvim/snippet/bminus.snippet<cr>G
+" nnoremap red<tab> :-1read $HOME/.config/nvim/snippet/red.snippet<cr>G
+" nnoremap bplus<tab> :-1read $HOME/.config/nvim/snippet/bplus.snippet<cr>G
+" nnoremap trie<tab> :-1read $HOME/.config/nvim/snippet/trie.snippet<cr>G
+" nnoremap patricia<tab> :-1read $HOME/.config/nvim/snippet/patricia.snippet<cr>G
